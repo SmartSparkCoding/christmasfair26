@@ -115,8 +115,8 @@ import { eventInfo, programme, allStalls } from '../data/fairData';
           <article class="highlight">
             <h3>Live performances</h3>
             <p>
-              The School Choir and Ashford Youth Jazz Orchestra perform through the afternoon at the
-              front of the school.
+              The School Choir opens the fair at 12:00pm at the front of the school, with a second set
+              being arranged.
             </p>
             <a href="/programme" class="text-link">See the programme</a>
           </article>
@@ -159,13 +159,15 @@ import { eventInfo, programme, allStalls } from '../data/fairData';
         <ol class="programme-list">
           {
             programme.slice(0, 4).map((item) => (
-              <li class="programme-row">
-                <span class="programme-time">{item.time}</span>
+              <li class:list={['programme-row', { 'programme-row--tbc': !item.confirmed }]}>
+                <span class:list={['programme-time', { 'programme-time--tbc': !item.confirmed }]}>
+                  {item.time}
+                </span>
                 <span class="programme-body">
                   <span class="programme-name">{item.name}</span>
                   <span class="programme-location">{item.location}</span>
                 </span>
-                <span class="programme-tag">{item.category}</span>
+                <span class="programme-tag">{item.confirmed ? item.category : 'To be confirmed'}</span>
               </li>
             ))
           }
@@ -650,6 +652,16 @@ import { eventInfo, programme, allStalls } from '../data/fairData';
     color: var(--gold);
     white-space: nowrap;
     padding-top: 0.35rem;
+  }
+
+  .programme-time--tbc {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    font-size: 0.95rem;
+  }
+
+  .programme-row--tbc .programme-name {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .programme-more {

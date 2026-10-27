@@ -55,15 +55,14 @@ import { raffleInfo, superRafflePrizes, everydayRafflePrizes } from '../data/fai
           </div>
           <ol class="super-list">
             {
-              superRafflePrizes.map((prize) => {
-                const [item, donor] = prize.split(' - ');
-                return (
-                  <li class="super-prize">
-                    <span class="super-prize__item">{item}</span>
-                    {donor && <span class="super-prize__donor">{donor}</span>}
-                  </li>
-                );
-              })
+              superRafflePrizes.map((prize) => (
+                <li class="super-prize">
+                  <span class="super-prize__item">{prize.item}</span>
+                  {prize.donor && (
+                    <span class="super-prize__donor">Donated by {prize.donor}</span>
+                  )}
+                </li>
+              ))
             }
           </ol>
         </section>

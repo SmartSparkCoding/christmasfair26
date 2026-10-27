@@ -19,39 +19,54 @@ cookies.
 
 ## Content sources and editorial decisions
 
-All event facts come from the PFA's Christmas Fair overview document. Where the document was
-ambiguous or contained internal notes, the following decisions were made:
+All event facts come from the PFA's overview document. The document is last year's fair copied
+forward, with **this year's edits written in blue**; unchanged text is black. Content was extracted
+with colour information so the blue edits could be applied and last year's text treated as
+carried-over rather than current.
 
-1. **Event name/year.** The overview document is headed "Christmas Fair 2025" but the site is the
-   2026 fair, so the year reads 2026 throughout. The format and details (29 November, 12:00–4:00pm)
-   are as supplied.
-2. **Instagram handle.** The overview said `@ashfordschoolpfa (TBC)`. That handle does not exist.
-   The PFA's real, verified account is **[@ashfordschool_pfa](https://www.instagram.com/ashfordschool_pfa)**
-   (note the underscore), confirmed via Instagram's oEmbed metadata for the PFA's own "welcome to our
-   new PFA Instagram page" post. The site uses that handle and embeds that post. The main school
-   account, `@ashfordschool`, is a separate account and is not used for PFA updates.
-3. **Location.** The overview says "Great Chart Site". The published address for the Prep School site
-   is Ashford Prep School, Great Chart, Ashford, Kent, TN23 3DJ (from ashfordschool.co.uk). The header
-   and every location mention link to that address in Google Maps.
-4. **Removed internal note.** The overview's jazz orchestra entry contained the working note
-   "AYJO Cant do so need to see if choir can do another 15-20 min slot". That is internal planning
-   commentary, not public information, so it is not published. The entry keeps the two listed set
-   times.
-5. **Times normalised.** Times are displayed consistently (`12:00pm – 12:30pm`, `1:30pm & 2:45pm`,
-   `3:15pm`). The two jazz orchestra sets are listed as `13:30` and `14:45` in the source and appear
-   as 1:30pm and 2:45pm.
-6. **Stall list reconciled.** The overview lists stallholders twice with overlapping and differently
-   spelled entries. Obvious duplicates were merged so the directory does not show the same trader
-   twice: `Warehore Vineyard` → `Warehorne Wines`, `Meander` → `Meander Jewellery`,
-   `Neals Yard Remedies` → `Neal's Yard Remedies`, the two `Park House Petals (TBC)` entries, and
-   `Impact squad` listed once (under School & PFA stalls). Source spellings such as
-   "Laura's stationary stash" are otherwise preserved. Current total: 47 listed stalls.
-7. **Not invented.** No entry fee, parking charges, stall prices, stallholder categories, map
-   coordinates or additional facilities have been invented. Where the PFA has not published
-   something (parking detail, accessibility statement, stall locations per trader), the site says so
-   rather than guessing.
-8. **Ambiguous stall location.** The overview gives "Room TBC" for the Christingle room and "TBC" for
-   the horse box; both are shown as TBC.
+### Facts taken from the document
+
+1. **Date — Sunday 29th November 2026.** The document's date line is black (unedited) and reads
+   "Saturday 29th November", which was true in 2025; in 2026 the 29th falls on a Sunday. The PFA
+   confirmed the 2026 fair is **Sunday 29th November**. Times are unchanged: 12:00pm – 4:00pm.
+2. **Location.** "Great Chart Site" plus the published address for the Prep School site: Ashford
+   Prep School, Great Chart, Ashford, Kent, TN23 3DJ. Every location mention links to that address
+   in Google Maps.
+3. **Instagram handle.** The document lists `@ashfordschoolpfa (TBC)`, which does not exist. The
+   PFA's real account is **[@ashfordschool_pfa](https://www.instagram.com/ashfordschool_pfa)**
+   (underscore), confirmed from the oEmbed metadata of the PFA's own "welcome to our new PFA
+   Instagram page" post, which the site embeds. `@ashfordschool` is the main school account and is
+   not used for PFA updates.
+
+### This year's (blue) changes applied
+
+| Blue edit | What changed on the site |
+| --- | --- |
+| "Traditional Christmas Cafe" (Nordic café) | Kept as the café's descriptor |
+| "First room on right from main entrance" (Christingle) | Christingle room location now reads that, dropping "Room TBC" |
+| "Large covered bouncy castle, penalty shootout, Christmas toys funfair ride" | Added to the Fairground entry |
+| "AYJO Cant do so need to see if choir can do another 15-20 min slot." | **Ashford Youth Jazz Orchestra removed from the 2026 programme**; a second School Choir set is listed as "To be confirmed" |
+| Neptune bar £500, £150 PFA cash, £150 Champney's hamper, Boys Hall £100, Suzi Standen £102 | Applied to the super raffle prize list |
+| Stall list on pages 3–4 (blue table) | Replaces last year's black list as the 2026 roster |
+
+### Notes and judgement calls
+
+- **Stall list.** The document carries two lists: last year's black list (page 2) and this year's
+  blue table (pages 3–4). The blue roster is published, because blue marks this year's edits; the
+  black list is treated as superseded. Duplicates were removed ("It has to be pretty" is listed
+  twice) and obvious mis-spellings of trading names corrected (`Neal's Yard Remidies` →
+  Neal's Yard Remedies, `Soul mates spirits` → Soulmate Spirits). **Ellis Amusements** is the
+  fairground operator, not a stall, so it appears in the programme rather than the directory.
+  **"Photo room - Senior school ?"** is still a question in the document and is not published as a
+  confirmed stall. "Kids stall" is published as written. Current total: 36 listed stalls.
+- **Super raffle cash prize.** The line reads "£200 Cash … PFA - 150 cash", with only "PFA - 150 cash"
+  in blue. The site shows £150, since the blue text is this year's figure. Worth confirming.
+- **Champney's hamper.** Reads "£120 … - £150 worth"; the blue "£150 worth" is used.
+- **The jazz orchestra note** is an internal planning instruction, not public copy, so it is not
+  published — but its consequence (no AYJO in 2026) is reflected in the programme.
+- **No invented content.** No entry fee, parking charges, stall prices, trader categories, map
+  coordinates or extra facilities have been added. Where the PFA has not published something
+  (parking detail, accessibility statement, per-trader locations) the site says so.
 
 ## Design system
 

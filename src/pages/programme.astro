@@ -54,9 +54,9 @@ const categories = ['All', ...Array.from(new Set(programme.map((item) => item.ca
         <ol class="programme-list" id="programmeList">
           {
             programme.map((item) => (
-              <li class="entry" data-category={item.category} id={item.id}>
+              <li class:list={['entry', { 'entry--tbc': !item.confirmed }]} data-category={item.category} id={item.id}>
                 <div class="entry__time">
-                  <span>{item.time}</span>
+                  <span class:list={{ 'entry__time--tbc': !item.confirmed }}>{item.time}</span>
                 </div>
                 <div class="entry__body">
                   <h2 class="entry__title">{item.name}</h2>
@@ -65,6 +65,7 @@ const categories = ['All', ...Array.from(new Set(programme.map((item) => item.ca
                 </div>
                 <div class="entry__meta">
                   <span class="entry__tag">{item.category}</span>
+                  {!item.confirmed && <span class="entry__tbc">To be confirmed</span>}
                 </div>
               </li>
             ))
@@ -196,7 +197,7 @@ const categories = ['All', ...Array.from(new Set(programme.map((item) => item.ca
 
   .entry {
     display: grid;
-    grid-template-columns: 190px 1fr 110px;
+    grid-template-columns: 190px 1fr 140px;
     gap: 2rem;
     padding: 1.9rem 0;
     border-bottom: 1px solid var(--border-subtle);
@@ -239,6 +240,24 @@ const categories = ['All', ...Array.from(new Set(programme.map((item) => item.ca
 
   .entry__meta {
     text-align: right;
+  }
+
+  .entry__tbc {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .entry__time--tbc {
+    color: var(--text-secondary) !important;
+    font-style: italic;
   }
 
   .entry__tag {

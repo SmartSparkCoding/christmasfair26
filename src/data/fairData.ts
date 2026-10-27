@@ -2,7 +2,7 @@ export const eventInfo = {
   name: "Ashford School Christmas Fair 2026",
   shortName: "Ashford School Christmas Fair",
   year: 2026,
-  date: "Saturday 29th November",
+  date: "Sunday 29th November",
   yearDate: "2026-11-29",
   time: "12:00pm – 4:00pm",
   startTime: "12:00",
@@ -48,27 +48,32 @@ export const programme = [
     end: "12:30",
     location: "Front of school (subject to weather, alternative location Friars Hall stage)",
     category: "Performance",
-    description: "Festive songs performed by the School Choir."
+    description: "Festive songs performed by the School Choir.",
+    confirmed: true,
   },
   {
-    id: "ayjo-1",
-    name: "Ashford Youth Jazz Orchestra",
-    time: "1:30pm & 2:45pm",
-    start: "13:30",
-    end: "14:45",
+    id: "choir-2",
+    name: "School Choir – second set",
+    time: "Time to be confirmed",
+    start: null,
+    end: null,
     location: "Front of school (subject to weather, alternative location Friars Hall stage)",
     category: "Performance",
-    description: "Live jazz from the Ashford Youth Jazz Orchestra, performing two sets during the afternoon."
+    description:
+      "An extra 15–20 minute set by the School Choir is being arranged. The time will be published once confirmed.",
+    confirmed: false,
   },
   {
     id: "grotto",
-    name: "Santa’s Grotto",
+    name: "Santa's Grotto",
     time: "12:00pm – 4:00pm",
     start: "12:00",
     end: "16:00",
-    location: "Down the stairs past the Friars Hall Entrance",
+    location: "Down the stairs past the Friars Hall entrance",
     category: "Attraction",
-    description: "Visit Santa! Grotto slots are every half an hour. We will have limited places available to just turn up on the day. Please keep to your allocated pre-booked time."
+    description:
+      "Visit Santa in his grotto. Slots run every half hour, and we will have limited places available to just turn up on the day. Please keep to your allocated pre-booked time.",
+    confirmed: true,
   },
   {
     id: "fairground",
@@ -78,7 +83,9 @@ export const programme = [
     end: "16:00",
     location: "Front of school (drop off area)",
     category: "Attraction",
-    description: "Swing Chairs, Climbing Wall & Penalty Shootout. Large covered bouncy castle, penalty shootout, Christmas toys funfair ride. Supplied & run by Ellis Amusements. Please observe safety instructions, children should have an adult present."
+    description:
+      "Swing chairs, climbing wall and penalty shootout, plus a large covered bouncy castle, penalty shootout and Christmas toys funfair ride. Supplied and run by Ellis Amusements. Please observe safety instructions; children should have an adult present.",
+    confirmed: true,
   },
   {
     id: "christingle",
@@ -86,9 +93,11 @@ export const programme = [
     time: "12:00pm – 4:00pm",
     start: "12:00",
     end: "16:00",
-    location: "First room on right from main entrance (Room TBC)",
+    location: "First room on right from main entrance",
     category: "Activity",
-    description: "Christingle room with Reverend Bellamy. Proceeds to The Children's Society."
+    description:
+      "Christingle room with Reverend Bellamy. Proceeds go to The Children's Society.",
+    confirmed: true,
   },
   {
     id: "raffle-draw",
@@ -98,44 +107,42 @@ export const programme = [
     end: "15:15",
     location: "Main Reception",
     category: "Event",
-    description: "Super raffle followed by everyday raffle."
-  }
+    description: "Super raffle followed by the everyday raffle.",
+    confirmed: true,
+  },
 ];
 
+/**
+ * The 2026 stall list. The PFA's document carries last year's list in black and
+ * this year's roster in blue; the blue table is reproduced here, with duplicates
+ * removed ("It has to be pretty" appears twice) and obvious mis-spellings of
+ * trading names corrected. "Ellis Amusements" (the fairground operator) and
+ * "Photo room - Senior school ?" (still a question in the document) are not
+ * published as stalls.
+ */
 export const independentStalls = [
-  "It has to be pretty",
-  "Kent Hampers",
-  "PrettyLittleSoaps",
-  "Season",
   "Caroline's Crafty Crochet",
-  "Zoe Robyn Jewellery",
-  "Happy Days Crafts",
-  "Warehorne Wines",
-  "Noble & Page",
   "Blue Farm Cottage Crafts",
-  "Fox & Bloom",
-  "Laura's stationary stash",
-  "Soulmate Spirits Ltd",
-  "Neal's Yard Remedies",
-  "MoreThanBalloons",
-  "The Small Batch Company",
-  "Bowjangles",
-  "The Boot Room Company",
   "Meander Jewellery",
-  "Nine Oaks Vineyard",
-  "Vintage Games",
-  "The Yoga Man",
-  "Create Alchemy",
-  "Park House Petals (TBC)",
+  "Fox & Bloom",
   "Hand Made in Hythe",
+  "Neal's Yard Remedies",
   "Pop Goes The Balloon",
+  "Warehore Vineyard",
+  "It has to be pretty",
+  "Soulmate Spirits",
   "The Granary Spa",
   "By Wuzzie",
+  "Zoe Robyn Jewellery",
   "Molly Bishop Art",
   "Tina Laker",
+  "Season",
   "Ivy & Rose Bloom Bar",
+  "Kids stall",
   "Woodchurch Vineyard",
   "Homeplus Furniture",
+  "The Small Batch Company",
+  "Vintage Games",
   "Baby Adore",
   "Binks",
 ];
@@ -167,16 +174,21 @@ export const raffleInfo = {
   drawDescription: "Super raffle followed by everyday raffle."
 };
 
+/**
+ * 2026 super raffle prizes. Blue edits in the PFA document add the Neptune bar,
+ * change the PFA cash prize to £150, put the Champney's hamper at £150, and add
+ * the Boys Hall and Suzi Standen vouchers.
+ */
 export const superRafflePrizes = [
-  "Neptune Bar set up with £500 - Donated by Matt from Neptune Bars",
-  "£200 Cash - Donated by Ashford School PFA",
-  "£160 Kent Cookery Voucher - Donated by Autumn from Kent Cookery School",
-  "£150 JET Aesthetics Microneedling voucher - Donated by Jemma from Jet Aesthetics",
-  "£120 Champney’s Hamper - Donated by Eastwell Manor",
-  "Hogwarts Lego - Donated by Alanna from Maebil Lettings",
-  "Abbey Road Exclusive Visitor Experience - Donated by Rebecca Hodges",
-  "£100 Boys Hall voucher",
-  "£102 Suzi Standen Pilates voucher",
+  { item: "Neptune bar set up, worth £500", donor: "Matt from Neptune Bars" },
+  { item: "£150 cash", donor: "Ashford School PFA" },
+  { item: "£160 Kent Cookery voucher", donor: "Autumn from Kent Cookery School" },
+  { item: "£150 JET Aesthetics microneedling voucher", donor: "Jemma from Jet Aesthetics" },
+  { item: "£150 Champney's hamper", donor: "Eastwell Manor" },
+  { item: "Hogwarts Lego", donor: "Alanna from Maebil Lettings" },
+  { item: "Abbey Road exclusive visitor experience", donor: "Rebecca Hodges" },
+  { item: "£100 Boys Hall voucher", donor: null },
+  { item: "£102 Suzi Standen Pilates voucher", donor: null },
 ];
 
 export const everydayRafflePrizes = [
