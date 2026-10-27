@@ -12,7 +12,8 @@ export const eventInfo = {
   schoolUrl: "https://www.ashfordschool.co.uk/",
   pfaEmail: "ashfordschoolpfa@gmail.com",
   pfaInstagram: "@ashfordschoolpfa",
-  instagramTbd: true,
+  instagramUrl: "https://www.instagram.com/ashfordschoolpfa/",
+  instagramTbd: false,
   welcomeMessage: `Welcome to our Christmas Fair! We’re delighted to have you join us for an afternoon filled with festive cheer, handmade gifts, and seasonal treats.
 
 Every mince pie and raffle ticket helps support our school community. We will once again be funding a number of initiatives & projects in the coming year.
