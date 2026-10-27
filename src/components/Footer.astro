@@ -6,23 +6,34 @@ import { eventInfo } from '../data/fairData';
   <div class="container footer-container">
     <div class="footer-main">
       <div class="footer-brand-section">
-        <img src="/images/ashford-logo-footer.png" alt="Ashford School" class="footer-logo" />
-        <h3 class="footer-brand-name">Ashford School Christmas Fair 2026</h3>
+        <img
+          src="/images/ashford-logo-footer.png"
+          alt="Ashford School"
+          class="footer-logo"
+          width="150"
+          height="60"
+          loading="lazy"
+        />
+        <p class="footer-brand-name">Ashford School Christmas Fair 2026</p>
         <p class="footer-brand-tagline">A magical day of festive fun for the whole family</p>
       </div>
-      
+
       <div class="footer-links">
         <div class="footer-section">
-          <h4>Event Details</h4>
+          <h2>Event Details</h2>
           <ul>
-            <li><strong>Date:</strong> {eventInfo.date}</li>
-            <li><strong>Time:</strong> {eventInfo.time}</li>
-            <li><strong>Location:</strong> {eventInfo.location}</li>
+            <li>{eventInfo.date}</li>
+            <li>{eventInfo.time}</li>
+            <li>
+              <a href={eventInfo.mapsUrl} target="_blank" rel="noopener noreferrer">
+                {eventInfo.location}
+              </a>
+            </li>
           </ul>
         </div>
-        
+
         <div class="footer-section">
-          <h4>Quick Links</h4>
+          <h2>Explore</h2>
           <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/programme">Programme</a></li>
@@ -31,24 +42,32 @@ import { eventInfo } from '../data/fairData';
             <li><a href="/raffle">Raffle</a></li>
           </ul>
         </div>
-        
+
         <div class="footer-section">
-          <h4>Contact & Social</h4>
+          <h2>Contact &amp; Social</h2>
           <ul>
-            <li><a href={`mailto:${eventInfo.pfaEmail}`}>📧 {eventInfo.pfaEmail}</a></li>
-            <li><a href="https://www.instagram.com/ashfordschool/" target="_blank" rel="noopener noreferrer">📸 @ashfordschool</a></li>
-            <li><a href={eventInfo.schoolUrl} target="_blank" rel="noopener noreferrer">🏫 Ashford School Website</a></li>
+            <li><a href={`mailto:${eventInfo.pfaEmail}`}>{eventInfo.pfaEmail}</a></li>
+            <li>
+              <a href={eventInfo.instagramUrl} target="_blank" rel="noopener noreferrer">
+                Instagram {eventInfo.pfaInstagram}
+              </a>
+            </li>
+            <li>
+              <a href={eventInfo.schoolUrl} target="_blank" rel="noopener noreferrer">
+                Ashford School website
+              </a>
+            </li>
           </ul>
         </div>
       </div>
     </div>
-    
+
     <div class="footer-bottom">
       <p class="footer-credit">
-        Website designed and built by <a href="https://jacob.navaratne.uk/" target="_blank" rel="noopener noreferrer"><strong>Jacob Navaratne</strong></a> - Year 10 Student at Ashford School
+        Website designed and built by <a href="https://jacob.navaratne.uk/" target="_blank" rel="noopener noreferrer">Jacob Navaratne</a>, Year 10 Student at Ashford School
       </p>
       <p class="footer-school">
-        Organised by Ashford School Parents & Friends Association (PFA)
+        Organised by Ashford School Parents &amp; Friends Association (PFA)
       </p>
     </div>
   </div>
@@ -58,131 +77,120 @@ import { eventInfo } from '../data/fairData';
   .footer {
     background: linear-gradient(180deg, var(--navy) 0%, #0a1528 100%);
     color: rgba(255, 255, 255, 0.92);
-    border-top: 4px solid var(--gold);
+    border-top: 3px solid var(--gold);
     margin-top: 5rem;
   }
-  
+
   .footer-container {
     padding-top: 3.5rem;
     padding-bottom: 2rem;
   }
-  
+
   .footer-main {
     display: grid;
-    grid-template-columns: 1.2fr 2fr;
+    grid-template-columns: 1fr 1.7fr;
     gap: 3rem;
     margin-bottom: 2.5rem;
   }
-  
-  .footer-brand-section {
-    text-align: left;
-  }
-  
+
   .footer-logo {
-    height: 60px;
+    height: 62px;
     width: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     filter: brightness(0) invert(1);
   }
-  
+
   .footer-brand-name {
-    color: var(--white);
+    color: var(--pure-white);
     font-family: var(--font-serif);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.3;
   }
-  
+
   .footer-brand-tagline {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.78);
     font-style: italic;
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
   }
-  
+
   .footer-links {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
-  
-  .footer-section h4 {
+
+  .footer-section h2 {
     color: var(--gold);
     font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 700;
     margin-bottom: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
   }
-  
+
   .footer-section ul {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  
+
   .footer-section li {
-    margin-bottom: 0.625rem;
-    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 0.6rem;
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.55;
   }
-  
+
   .footer-section a {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.85);
     transition: color 0.2s ease;
   }
-  
+
   .footer-section a:hover {
     color: var(--gold);
   }
-  
+
   .footer-bottom {
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
     text-align: center;
   }
-  
+
   .footer-bottom p {
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 0.875rem;
-    margin-bottom: 0.375rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.86rem;
+    margin-bottom: 0.35rem;
   }
-  
+
   .footer-bottom a {
     color: var(--gold);
     transition: opacity 0.2s ease;
   }
-  
+
   .footer-bottom a:hover {
-    opacity: 0.9;
+    opacity: 0.85;
+    text-decoration: underline;
   }
-  
-  @media (max-width: 968px) {
+
+  @media (max-width: 900px) {
     .footer-main {
       grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    
-    .footer-brand-section {
-      text-align: center;
-    }
-    
-    .footer-logo {
-      margin: 0 auto 1rem;
+      gap: 2.25rem;
     }
   }
-  
+
   @media (max-width: 640px) {
     .footer-links {
       grid-template-columns: 1fr;
-      gap: 1.5rem;
+      gap: 1.75rem;
     }
-    
+
     .footer-brand-name {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
     }
   }
 </style>

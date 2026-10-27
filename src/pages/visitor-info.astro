@@ -5,212 +5,462 @@ import Footer from '../components/Footer.astro';
 import { eventInfo, keyLocations, safetyInfo } from '../data/fairData';
 ---
 
-<BaseLayout title="Visitor Information | Ashford School Christmas Fair 2026">
+<BaseLayout
+  title="Visitor Information | Ashford School Christmas Fair 2026"
+  description="Plan your visit to the Ashford School Christmas Fair 2026: location and parking, key locations, café, Santa's Grotto, accessibility and safety information."
+>
   <Navbar />
-  
-  <main>
-    <section class="page-header">
+
+  <main id="main-content">
+    <header class="page-header">
       <div class="container">
-        <h1 class="page-title">Visitor Information</h1>
-        <p class="page-subtitle">Everything you need to know for your visit</p>
+        <p class="page-header__label">Visitor information</p>
+        <h1 class="page-header__title">Plan your visit</h1>
+        <p class="page-header__intro">
+          Everything you need before you arrive at the Great Chart site, from finding your way
+          around to where to go if you need help on the day.
+        </p>
       </div>
-    </section>
-    
-    <section class="info-section">
+    </header>
+
+    <section class="visitor-section">
       <div class="container">
-        <div class="info-grid">
-          <div class="info-card main-info">
-            <h2>Event Details</h2>
-            <div class="detail-item">
-              <strong>📅 Date:</strong> {eventInfo.date}
+        <!-- Essentials -->
+        <section class="essentials" aria-labelledby="essentials-title">
+          <h2 class="visually-hidden" id="essentials-title">Event essentials</h2>
+          <dl class="essentials-grid">
+            <div class="essential">
+              <dt>Date</dt>
+              <dd>{eventInfo.date}</dd>
             </div>
-            <div class="detail-item">
-              <strong>🕐 Time:</strong> {eventInfo.time}
+            <div class="essential">
+              <dt>Open</dt>
+              <dd>{eventInfo.time}</dd>
             </div>
-            <div class="detail-item">
-              <strong>📍 Location:</strong> {eventInfo.location}
+            <div class="essential">
+              <dt>Location</dt>
+              <dd>
+                <a href={eventInfo.mapsUrl} target="_blank" rel="noopener noreferrer">
+                  Ashford Prep School, Great Chart
+                </a>
+              </dd>
             </div>
-            <div class="detail-item">
-              <strong>🏫 School:</strong> {eventInfo.schoolName}
+            <div class="essential">
+              <dt>Raffle tickets</dt>
+              <dd>£1 everyday &middot; £5 super</dd>
             </div>
+          </dl>
+        </section>
+
+        <div class="layout">
+          <div class="layout__main">
+            <section class="block" aria-labelledby="getting-here">
+              <h2 id="getting-here">Getting here</h2>
+              <p class="address">
+                {eventInfo.addressLines.map((line) => <span class="address__line">{line}</span>)}
+              </p>
+              <p>
+                The fair takes place at Ashford Prep School on the Great Chart site. The fairground
+                rides are at the front of the school in the drop-off area.
+              </p>
+              <p>
+                <a
+                  class="inline-link"
+                  href={eventInfo.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open the location in Google Maps
+                </a>
+              </p>
+              <p class="note">
+                Detailed parking and arrival arrangements have not been published by the PFA. Please
+                follow on-site signage and staff directions on the day.
+              </p>
+            </section>
+
+            <section class="block" aria-labelledby="key-locations">
+              <h2 id="key-locations">Key locations</h2>
+              <dl class="location-list">
+                {
+                  keyLocations.map((location) => (
+                    <div class="location">
+                      <dt>{location.name}</dt>
+                      <dd>{location.location}</dd>
+                    </div>
+                  ))
+                }
+              </dl>
+            </section>
+
+            <section class="block" aria-labelledby="food-drink">
+              <h2 id="food-drink">Food, drink and shopping</h2>
+              <p>
+                The Nordic Café in Friars Hall is a traditional Christmas café serving hot food,
+                homemade cakes and refreshments. A horse box serves mulled wine and Baileys hot
+                chocolate, and the Hall of Stalls in Harper Hall holds the main market.
+              </p>
+              <p>
+                Raffle and tombola tickets are available from Main Reception, and the Christingle room
+                with Reverend Bellamy is the first room on the right from the main entrance, raising
+                money for The Children's Society.
+              </p>
+            </section>
+
+            <section class="block" aria-labelledby="accessibility">
+              <h2 id="accessibility">Accessibility and facilities</h2>
+              <p>
+                Santa's Grotto is located down the stairs past the Friars Hall entrance. If stairs are
+                difficult for anyone in your group, please speak to a member of staff at the Welcome
+                Point in Main Reception, who can advise on the best route.
+              </p>
+              <p class="note">
+                The PFA has not published a detailed accessibility statement for this event. Please
+                contact the PFA directly with specific requirements.
+              </p>
+            </section>
+
+            <section class="block block--alert" aria-labelledby="safety">
+              <h2 id="safety">{safetyInfo.title}</h2>
+              <p>{safetyInfo.content}</p>
+            </section>
           </div>
-          
-          <div class="info-card">
-            <h2>Key Locations</h2>
-            <ul class="location-list">
-              {keyLocations.map(loc => (
+
+          <aside class="layout__side">
+            <div class="side-card">
+              <h2>Contact the PFA</h2>
+              <p>
+                Questions about the fair, stalls or Santa's Grotto bookings can go to the Parents
+                &amp; Friends Association.
+              </p>
+              <ul class="contact-list">
                 <li>
-                  <strong>{loc.name}</strong><br />
-                  <span class="location-detail">{loc.location}</span>
+                  <span class="contact-label">Email</span>
+                  <a href={`mailto:${eventInfo.pfaEmail}`}>{eventInfo.pfaEmail}</a>
                 </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div class="info-card">
-            <h2>Getting Here</h2>
-            <p><strong>Address:</strong> Ashford School, Great Chart Site</p>
-            <p><strong>Parking:</strong> Front of school (drop off area) for Fairground Rides. Please follow on-site directions on the day.</p>
-          </div>
-          
-          <div class="info-card">
-            <h2>Facilities</h2>
-            <ul>
-              <li>Nordic Café in Friars Hall (hot food, cakes, refreshments)</li>
-              <li>Santa's Grotto (pre-booked slots)</li>
-              <li>Fairground rides</li>
-              <li>Christingle Room (proceeds to The Children's Society)</li>
-              <li>Raffle & Tombola at Main Reception</li>
-              <li>Horse Box Mulled wine & Baileys Hot Chocolate (location TBC)</li>
-            </ul>
-          </div>
-          
-          <div class="info-card">
-            <h2>Payment</h2>
-            <p>Stallholders may accept cash and card payments. Please check with individual stalls on the day.</p>
-            <p>Raffle tickets can be purchased from reception on the day (£1 everyday, £5 super).</p>
-          </div>
-          
-          <div class="info-card safety-card">
-            <h2>🚨 {safetyInfo.title}</h2>
-            <p>{safetyInfo.content}</p>
-          </div>
-          
-          <div class="info-card">
-            <h2>Contact Us</h2>
-            <p><strong>Email:</strong> <a href={`mailto:${eventInfo.pfaEmail}`}>{eventInfo.pfaEmail}</a></p>
-            <p><strong>Instagram:</strong> {eventInfo.pfaInstagram} {eventInfo.instagramTbd && <em>(To be confirmed)</em>}</p>
-          </div>
+                <li>
+                  <span class="contact-label">Instagram</span>
+                  <a href={eventInfo.instagramUrl} target="_blank" rel="noopener noreferrer">
+                    {eventInfo.pfaInstagram}
+                  </a>
+                </li>
+                <li>
+                  <span class="contact-label">School</span>
+                  <a href={eventInfo.schoolUrl} target="_blank" rel="noopener noreferrer">
+                    ashfordschool.co.uk
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="side-card side-card--quiet">
+              <h2>Good to know</h2>
+              <ul class="plain-list">
+                <li>Children should have an adult with them at the fairground rides.</li>
+                <li>Santa's Grotto slots run every half hour; limited places are available on the day.</li>
+                <li>The raffle is drawn at 3:15pm in Main Reception.</li>
+                <li>Performances move to the Friars Hall stage if the weather turns.</li>
+              </ul>
+            </div>
+          </aside>
         </div>
       </div>
     </section>
   </main>
-  
+
   <Footer />
 </BaseLayout>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, var(--navy) 0%, #0f1f3a 100%);
-    color: var(--white);
-    padding: 3rem 0 2rem;
-    text-align: center;
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
-  
-  .page-title {
-    color: var(--white);
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 0.5rem;
+
+  .visitor-section {
+    padding: 2.75rem 0 5rem;
   }
-  
-  .page-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
+
+  .essentials {
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1.5rem 0;
+    margin-bottom: 3rem;
+  }
+
+  .essentials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.75rem;
     margin: 0;
   }
-  
-  .info-section {
-    padding: 2.5rem 0 4rem;
+
+  .essential dt {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
   }
-  
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .info-card {
-    background: var(--surface);
-    padding: 1.75rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--subtle-border);
-    box-shadow: 0 2px 8px rgba(22, 41, 74, 0.04);
-  }
-  
-  .info-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+
+  .essential dd {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
     color: var(--navy);
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--subtle-border);
+    line-height: 1.45;
   }
-  
-  .main-info {
-    background: linear-gradient(135deg, rgba(35, 99, 75, 0.05) 0%, var(--surface) 100%);
-    border-color: rgba(35, 99, 75, 0.3);
+
+  .essential dd a {
+    border-bottom: 1px solid rgba(22, 41, 74, 0.3);
+    transition: border-color 0.2s ease, color 0.2s ease;
   }
-  
-  .main-info h2 {
-    color: var(--evergreen);
-    border-bottom-color: rgba(35, 99, 75, 0.3);
-  }
-  
-  .safety-card {
-    background: linear-gradient(135deg, rgba(161, 24, 52, 0.05) 0%, var(--surface) 100%);
-    border-color: rgba(161, 24, 52, 0.3);
-  }
-  
-  .safety-card h2 {
+
+  .essential dd a:hover {
     color: var(--accent);
-    border-bottom-color: rgba(161, 24, 52, 0.3);
+    border-color: var(--accent);
   }
-  
-  .detail-item {
-    margin-bottom: 0.75rem;
-    padding: 0.5rem 0;
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 3.5rem;
+    align-items: start;
   }
-  
-  .location-list {
-    list-style: none;
-    padding: 0;
+
+  .block {
+    padding-bottom: 2.25rem;
+    margin-bottom: 2.25rem;
+    border-bottom: 1px solid var(--border-subtle);
   }
-  
-  .location-list li {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--subtle-border);
-  }
-  
-  .location-list li:last-child {
+
+  .block:last-child {
+    border-bottom: none;
     margin-bottom: 0;
     padding-bottom: 0;
-    border-bottom: none;
   }
-  
-  .location-detail {
+
+  .block h2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+  }
+
+  .block p {
+    font-size: 0.98rem;
+    line-height: 1.8;
+    margin-bottom: 0.9rem;
+    max-width: 42rem;
+  }
+
+  .block p:last-child {
+    margin-bottom: 0;
+  }
+
+  .address {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-style: normal;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
   }
-  
-  .info-card ul {
-    padding-left: 1.25rem;
-  }
-  
-  .info-card li {
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-  }
-  
-  .info-card p {
-    margin-bottom: 0.75rem;
-  }
-  
-  .info-card a {
+
+  .inline-link {
     color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(161, 24, 52, 0.35);
+    padding-bottom: 1px;
+  }
+
+  .inline-link:hover {
+    border-color: var(--accent-hover);
+    color: var(--accent-hover);
+  }
+
+  .note {
+    font-size: 0.88rem !important;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--border-subtle);
+    padding-left: 0.9rem;
+  }
+
+  .location-list {
+    margin: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .location {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: baseline;
+  }
+
+  .location dt {
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .location dd {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .block--alert {
+    background: rgba(161, 24, 52, 0.05);
+    border: 1px solid rgba(161, 24, 52, 0.18);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.6rem;
+    border-bottom: 1px solid rgba(161, 24, 52, 0.18);
+  }
+
+  .block--alert h2 {
+    color: var(--accent);
+    font-size: 1.4rem;
+  }
+
+  .layout__side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 8rem;
+  }
+
+  .side-card {
+    background: var(--surface-tint);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .side-card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .side-card p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .contact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .contact-label {
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.15rem;
+  }
+
+  .contact-list a {
+    font-size: 0.92rem;
+    color: var(--navy);
     font-weight: 500;
+    word-break: break-word;
+    border-bottom: 1px solid rgba(22, 41, 74, 0.25);
   }
-  
-  .info-card a:hover {
-    text-decoration: underline;
+
+  .contact-list a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
   }
-  
+
+  .side-card--quiet {
+    background: transparent;
+  }
+
+  .plain-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .plain-list li {
+    position: relative;
+    padding-left: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .plain-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--soft-gold);
+  }
+
+  @media (max-width: 1000px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .layout__side {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .essentials-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
   @media (max-width: 640px) {
-    .info-grid {
+    .visitor-section {
+      padding: 2rem 0 3.5rem;
+    }
+
+    .location {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+
+    .layout__side {
       grid-template-columns: 1fr;
     }
-    
-    .info-card {
-      padding: 1.25rem;
+
+    .block h2 {
+      font-size: 1.45rem;
     }
   }
 </style>

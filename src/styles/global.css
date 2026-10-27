@@ -1,45 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --ashford-navy: #16294A;
-  --christmas-burgundy: #A11834;
-  --evergreen: #23634B;
-  --warm-cream: #F8F5ED;
-  --soft-gold: #D4AD72;
-  --white: #FFFFFF;
-  --body-text: #252A32;
+  /* ---- Brand palette ---- */
+  --ashford-navy: #16294a;
+  --christmas-burgundy: #a11834;
+  --evergreen: #23634b;
+  --warm-cream: #f8f5ed;
+  --soft-gold: #d4ad72;
+  --pure-white: #ffffff;
+  --body-text: #252a32;
   --muted-text: #626875;
-  --subtle-border: #E5E0D6;
-  
+  --border-subtle: #e5e0d6;
+
+  /* ---- Semantic aliases ---- */
   --background: var(--warm-cream);
-  --surface: var(--white);
-  --surface-alt: #F5F2EA;
+  --surface: var(--pure-white);
+  --surface-tint: #f2eee4;
   --text-primary: var(--body-text);
   --text-secondary: var(--muted-text);
-  --accent: var(--christmas-burgundy);
-  --accent-hover: #8A142B;
-  --accent-secondary: var(--evergreen);
+  --text-inverse: var(--pure-white);
+
   --navy: var(--ashford-navy);
+  --accent: var(--christmas-burgundy);
+  --accent-hover: #87142b;
+  --secondary: var(--evergreen);
   --gold: var(--soft-gold);
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --max-width: 1200px;
-  
-  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+
+  /* ---- Type ---- */
+  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
     sans-serif;
+
+  /* ---- Layout ---- */
+  --max-width: 1180px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* ---- Spacing scale ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 5.5rem;
+
+  --shadow-sm: 0 1px 2px rgba(22, 41, 74, 0.06);
+  --shadow-md: 0 6px 20px rgba(22, 41, 74, 0.09);
+  --shadow-lg: 0 18px 48px rgba(22, 41, 74, 0.13);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
   background: var(--background);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -55,7 +78,7 @@ body {
 }
 
 ::selection {
-  background: rgba(161, 24, 52, 0.2);
+  background: rgba(161, 24, 52, 0.16);
   color: var(--navy);
 }
 
@@ -86,7 +109,13 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+blockquote {
   margin-top: 0;
 }
 
@@ -97,25 +126,33 @@ h4,
 h5,
 h6 {
   font-family: var(--font-serif);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--navy);
   font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  color: var(--navy);
 }
 
 p {
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
+/* ---- Focus ---- */
+:focus-visible {
+  outline: 3px solid var(--christmas-burgundy);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---- Layout helpers ---- */
 .container {
-  width: min(100% - 40px, var(--max-width));
+  width: min(100% - 3rem, var(--max-width));
   margin-inline: auto;
 }
 
 @media (max-width: 640px) {
   .container {
-    width: min(100% - 24px, var(--max-width));
+    width: min(100% - 2rem, var(--max-width));
   }
 }
 
@@ -131,16 +168,104 @@ p {
   border-width: 0;
 }
 
+/* ---- Shared page header (inner pages) ---- */
+.page-header {
+  background: var(--navy);
+  color: var(--pure-white);
+  padding: 3.5rem 0 2.75rem;
+  border-bottom: 3px solid var(--soft-gold);
+}
+
+.page-header__label {
+  color: var(--soft-gold);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.page-header__title {
+  color: var(--pure-white);
+  font-size: clamp(2.3rem, 5vw, 3.4rem);
+  line-height: 1.1;
+  margin-bottom: 0.85rem;
+}
+
+.page-header__intro {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 46rem;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 2.5rem 0 2rem;
+  }
+}
+
+/* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  
-  html {
-    scroll-behavior: auto;
+}
+
+/* ---- Print base ---- */
+@media print {
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* Site chrome and decorative controls are not useful on paper. */
+  .navbar,
+  .footer,
+  .skip-link {
+    display: none !important;
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+  }
+
+  .page-header {
+    background: none !important;
+    border-bottom: 2px solid #000;
+    padding: 0 0 0.75rem;
+  }
+
+  .page-header__label,
+  .page-header__title,
+  .page-header__intro {
+    color: #000 !important;
+  }
+
+  .page-header__title {
+    font-size: 2rem;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #000 !important;
   }
 }

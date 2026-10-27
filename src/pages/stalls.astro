@@ -3,183 +3,301 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { independentStalls, schoolPFASstalls } from '../data/fairData';
+
+const groups = [
+  {
+    id: 'independent',
+    title: 'Independent stallholders',
+    intro: 'Local makers, growers and independent businesses from Ashford and the surrounding area.',
+    stalls: independentStalls,
+  },
+  {
+    id: 'school',
+    title: 'School & PFA stalls',
+    intro: 'Run by the Parents & Friends Association and school groups, raising funds for the school community.',
+    stalls: schoolPFASstalls,
+  },
+];
+
+const totalStalls = independentStalls.length + schoolPFASstalls.length;
 ---
 
-<BaseLayout title="Stalls Directory | Ashford School Christmas Fair 2026">
+<BaseLayout
+  title="Stalls | Ashford School Christmas Fair 2026"
+  description="Browse the stallholders at the Ashford School Christmas Fair 2026, from independent makers and local vineyards to the PFA raffle, tombola and café."
+>
   <Navbar />
-  
-  <main>
-    <section class="page-header">
+
+  <main id="main-content">
+    <header class="page-header">
       <div class="container">
-        <h1 class="page-title">Stall Directory</h1>
-        <p class="page-subtitle">Handmade gifts, crafts, treats and more</p>
+        <p class="page-header__label">Stall directory</p>
+        <h1 class="page-header__title">Stalls &amp; shopping</h1>
+        <p class="page-header__intro">
+          {totalStalls} stalls of handmade gifts, crafts, wines and seasonal treats across Harper Hall
+          and the rest of the Great Chart site.
+        </p>
       </div>
-    </section>
-    
+    </header>
+
     <section class="stalls-section">
       <div class="container">
-        <div class="search-box">
-          <input type="text" id="stallSearch" class="search-input" placeholder="Search stalls..." aria-label="Search stalls">
+        <div class="search-row">
+          <div class="search-field">
+            <label for="stallSearch" class="search-label">Search stalls</label>
+            <input
+              type="search"
+              id="stallSearch"
+              class="search-input"
+              placeholder="Search by name, for example Wine"
+              autocomplete="off"
+            />
+          </div>
+          <p class="search-status" id="searchStatus" aria-live="polite">{totalStalls} stalls</p>
         </div>
-        
-        <div class="stall-categories">
-          <section class="category-section">
-            <h2 class="category-title">
-              <span class="category-icon">🛍️</span>
-              Independent Stallholders
-            </h2>
-            <div class="stalls-grid" id="independentStalls">
-              {independentStalls.map(stall => (
-                <div class="stall-card" data-name={stall.toLowerCase()}>
-                  <h3>{stall}</h3>
-                </div>
-              ))}
-            </div>
-          </section>
-          
-          <section class="category-section">
-            <h2 class="category-title">
-              <span class="category-icon">🏫</span>
-              School & PFA Stalls
-            </h2>
-            <div class="stalls-grid" id="schoolStalls">
-              {schoolPFASstalls.map(stall => (
-                <div class="stall-card" data-name={stall.toLowerCase()}>
-                  <h3>{stall}</h3>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
+
+        {
+          groups.map((group) => (
+            <section class="stall-group" data-group={group.id}>
+              <div class="group-head">
+                <h2 class="group-title">{group.title}</h2>
+                <p class="group-intro">{group.intro}</p>
+              </div>
+              <ul class="stall-list">
+                {group.stalls.map((stall) => (
+                  <li class="stall" data-name={stall.toLowerCase()}>
+                    <span class="stall-name">{stall}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+
+        <p class="empty-state" id="emptyState" hidden>
+          No stalls match your search. <button type="button" class="empty-reset" id="clearSearch">
+            Clear search
+          </button>
+        </p>
+
+        <aside class="location-note">
+          <h2>The Hall of Stalls</h2>
+          <p>
+            Most stalls are in Harper Hall. School and PFA stalls are spread across Main Reception,
+            Friars Hall and the front of school. Ask at the Welcome Point in Main Reception if you
+            need help finding a stallholder.
+          </p>
+        </aside>
       </div>
     </section>
   </main>
-  
+
   <Footer />
 </BaseLayout>
 
 <script>
-  const searchInput = document.getElementById('stallSearch');
-  const stallCards = document.querySelectorAll('.stall-card');
-  
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      
-      stallCards.forEach(card => {
-        const stallName = card.getAttribute('data-name') || '';
-        if (stallName.includes(searchTerm)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+  const input = document.getElementById('stallSearch') as HTMLInputElement | null;
+  const stalls = Array.from(document.querySelectorAll<HTMLElement>('.stall'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('.stall-group'));
+  const emptyState = document.getElementById('emptyState');
+  const status = document.getElementById('searchStatus');
+  const clearButton = document.getElementById('clearSearch');
+
+  const runSearch = (rawTerm: string) => {
+    const term = rawTerm.trim().toLowerCase();
+    let visible = 0;
+
+    stalls.forEach((stall) => {
+      const matches = !term || (stall.dataset.name ?? '').includes(term);
+      stall.hidden = !matches;
+      if (matches) visible += 1;
     });
-  }
+
+    groups.forEach((group) => {
+      const hasVisible = group.querySelectorAll<HTMLElement>('.stall:not([hidden])').length > 0;
+      group.hidden = !hasVisible;
+    });
+
+    if (emptyState) emptyState.hidden = visible > 0;
+    if (status) {
+      status.textContent = `${visible} ${visible === 1 ? 'stall' : 'stalls'}`;
+    }
+  };
+
+  input?.addEventListener('input', () => runSearch(input.value));
+
+  clearButton?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    runSearch('');
+  });
 </script>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, var(--navy) 0%, #0f1f3a 100%);
-    color: var(--white);
-    padding: 3rem 0 2rem;
-    text-align: center;
+  .stalls-section {
+    padding: 2.75rem 0 5rem;
   }
-  
-  .page-title {
-    color: var(--white);
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
+
+  .search-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 2.5rem;
+  }
+
+  .search-field {
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+  }
+
+  .search-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
   }
-  
-  .page-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    margin: 0;
-  }
-  
-  .stalls-section {
-    padding: 2.5rem 0 4rem;
-  }
-  
-  .search-box {
-    margin-bottom: 2.5rem;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
+
   .search-input {
     width: 100%;
-    padding: 0.875rem 1.25rem;
-    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
     font-family: var(--font-sans);
-    border: 2px solid var(--subtle-border);
-    border-radius: var(--radius-md);
-    background: var(--surface);
+    font-size: 0.95rem;
     color: var(--text-primary);
+    background: var(--pure-white);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    transition: border-color 0.2s ease;
   }
-  
+
+  .search-input::placeholder {
+    color: #9aa0aa;
+  }
+
   .search-input:focus {
     outline: none;
     border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(22, 41, 74, 0.1);
   }
-  
-  .category-section {
+
+  .search-status {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin: 0 0 0.6rem;
+  }
+
+  .stall-group {
     margin-bottom: 3rem;
   }
-  
-  .category-title {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--subtle-border);
+
+  .group-head {
+    margin-bottom: 1.25rem;
+    max-width: 44rem;
   }
-  
-  .category-icon {
-    font-size: 1.5rem;
+
+  .group-title {
+    font-size: 1.9rem;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
   }
-  
-  .stalls-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-  
-  .stall-card {
-    background: var(--surface);
-    padding: 1rem 1.25rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--subtle-border);
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 4px rgba(22, 41, 74, 0.04);
-  }
-  
-  .stall-card:hover {
-    border-color: var(--evergreen);
-    box-shadow: 0 2px 8px rgba(35, 99, 75, 0.1);
-    transform: translateX(4px);
-  }
-  
-  .stall-card h3 {
-    font-family: var(--font-sans);
+
+  .group-intro {
     font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--navy);
+    color: var(--text-secondary);
+    line-height: 1.7;
     margin: 0;
-    line-height: 1.4;
   }
-  
-  @media (max-width: 640px) {
-    .stalls-grid {
+
+  .stall-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .stall {
+    padding: 0.95rem 1.5rem 0.95rem 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .stall-name {
+    font-size: 0.97rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  .empty-state {
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.98rem;
+  }
+
+  .empty-reset {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .location-note {
+    margin-top: 1rem;
+    padding: 1.75rem;
+    background: var(--surface-tint);
+    border-left: 3px solid var(--secondary);
+    border-radius: var(--radius-md);
+    max-width: 52rem;
+  }
+
+  .location-note h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .location-note p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .stall-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .stalls-section {
+      padding: 2rem 0 3.5rem;
+    }
+
+    .stall-list {
       grid-template-columns: 1fr;
     }
-    
-    .category-title {
-      font-size: 1.5rem;
+
+    .stall {
+      padding-right: 0;
+    }
+
+    .group-title {
+      font-size: 1.55rem;
     }
   }
 </style>

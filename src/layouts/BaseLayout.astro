@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { eventInfo } from '../data/fairData';
 
 interface Props {
   title?: string;
@@ -7,13 +8,15 @@ interface Props {
 }
 
 const {
-  title = 'Ashford School Christmas Fair 2026 | Great Chart Site | 29th November 12:00-4:00pm',
-  description = 'Join us for the Ashford School Christmas Fair 2026 on Saturday 29th November, 12:00 pm - 4:00 pm at the Great Chart Site. Festive fun, stalls, Santa\'s Grotto, performances and more.',
+  title = `Ashford School Christmas Fair 2026 | ${eventInfo.date}, ${eventInfo.time}`,
+  description = `Join us for the Ashford School Christmas Fair 2026 on ${eventInfo.date}, ${eventInfo.time} at ${eventInfo.location}. Festive stalls, Santa's Grotto, fairground rides, live performances and more.`,
 } = Astro.props;
+
+const ogImage = new URL('/images/hero-christmas.jpg', Astro.url).href;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,19 +25,34 @@ const {
     <meta name="description" content={description} />
     <link rel="canonical" href={Astro.url} />
     <meta name="theme-color" content="#16294A" />
-    
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_GB" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:site_name" content="Ashford School Christmas Fair 2026" />
-    
+    <meta property="og:image" content={ogImage} />
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    
+    <meta name="twitter:image" content={ogImage} />
+
     <slot name="head" />
   </head>
   <body>
