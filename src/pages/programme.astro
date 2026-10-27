@@ -5,48 +5,62 @@ import Footer from '../components/Footer.astro';
 import { programme } from '../data/fairData';
 ---
 
-<BaseLayout title="Programme | Ashford School Christmas Fair 2026">
+<BaseLayout title="Digital Programme | Ashford School Christmas Fair 2026">
   <Navbar />
   
   <main>
     <section class="page-header">
       <div class="container">
-        <h1 class="page-title">Digital Programme</h1>
-        <p class="page-subtitle">Events, performances and attractions happening on the day</p>
+        <div class="page-header-content">
+          <div class="section-label">Digital Programme</div>
+          <h1 class="page-title">The Day's Events</h1>
+          <p class="page-subtitle">A beautifully curated guide to performances, attractions and festive activities</p>
+        </div>
       </div>
     </section>
     
     <section class="programme-section">
       <div class="container">
-        <div class="filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="Performance">Performances</button>
-          <button class="filter-btn" data-filter="Attraction">Attractions</button>
-          <button class="filter-btn" data-filter="Activity">Activities</button>
-          <button class="filter-btn" data-filter="Event">Events</button>
+        <div class="filters-container">
+          <h2 class="filters-title">Filter by Category</h2>
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Events</button>
+            <button class="filter-btn" data-filter="Performance">Performances</button>
+            <button class="filter-btn" data-filter="Attraction">Attractions</button>
+            <button class="filter-btn" data-filter="Activity">Activities</button>
+            <button class="filter-btn" data-filter="Event">Events</button>
+          </div>
         </div>
         
-        <div class="programme-grid">
+        <div class="programme-list">
           {programme.map(item => (
-            <article class="programme-card" data-category={item.category} id={item.id}>
-              <div class="programme-card-header">
-                <div>
-                  <h2 class="programme-card-title">{item.name}</h2>
-                  <span class="programme-card-category">{item.category}</span>
+            <article class="programme-entry" data-category={item.category} id={item.id}>
+              <div class="programme-entry-header">
+                <div class="programme-entry-main">
+                  <h2 class="programme-entry-title">{item.name}</h2>
+                  <span class="programme-entry-category">{item.category}</span>
                 </div>
-                <div class="programme-card-time">{item.time}</div>
+                <div class="programme-entry-time-badge">
+                  <span class="programme-entry-time">{item.time}</span>
+                </div>
               </div>
-              <div class="programme-card-body">
-                <p class="programme-card-location">📍 {item.location}</p>
-                <p class="programme-card-desc">{item.description}</p>
+              <div class="programme-entry-body">
+                <div class="programme-entry-location">
+                  <span class="location-icon">📍</span>
+                  <span>{item.location}</span>
+                </div>
+                <p class="programme-entry-desc">{item.description}</p>
               </div>
+              <div class="programme-entry-divider"></div>
             </article>
           ))}
         </div>
         
-        <div class="print-section">
-          <button onclick="window.print()" class="print-btn">🖨️ Print Programme</button>
-          <p class="print-note">This programme is print-friendly. Use your browser's print function.</p>
+        <div class="programme-footer">
+          <div class="print-section">
+            <button onclick="window.print()" class="print-btn">🖨️ Print Programme</button>
+            <p class="print-note">Perfect for taking around the fair</p>
+          </div>
         </div>
       </div>
     </section>
@@ -57,7 +71,7 @@ import { programme } from '../data/fairData';
 
 <script>
   const filterBtns = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.programme-card');
+  const entries = document.querySelectorAll('.programme-entry');
   
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -66,11 +80,11 @@ import { programme } from '../data/fairData';
       
       const filter = btn.getAttribute('data-filter');
       
-      cards.forEach(card => {
-        if (filter === 'all' || card.getAttribute('data-category') === filter) {
-          card.style.display = 'block';
+      entries.forEach(entry => {
+        if (filter === 'all' || entry.getAttribute('data-category') === filter) {
+          entry.style.display = 'block';
         } else {
-          card.style.display = 'none';
+          entry.style.display = 'none';
         }
       });
     });
@@ -81,47 +95,81 @@ import { programme } from '../data/fairData';
   .page-header {
     background: linear-gradient(135deg, var(--navy) 0%, #0f1f3a 100%);
     color: var(--white);
-    padding: 3rem 0 2rem;
+    padding: 4rem 0 3rem;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--accent), var(--evergreen));
+  }
+  
+  .page-header-content {
+    position: relative;
+    z-index: 1;
   }
   
   .page-title {
     color: var(--white);
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 0.5rem;
+    font-size: clamp(2.8rem, 6vw, 4rem);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
   }
   
   .page-subtitle {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    font-style: italic;
     margin: 0;
   }
   
   .programme-section {
-    padding: 2.5rem 0 4rem;
+    padding: 3rem 0 5rem;
+  }
+  
+  .filters-container {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+  
+  .filters-title {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin-bottom: 1rem;
+    font-weight: 600;
   }
   
   .filters {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
     justify-content: center;
   }
   
   .filter-btn {
-    padding: 0.5rem 1.25rem;
+    padding: 0.625rem 1.25rem;
     background: var(--surface);
-    border: 2px solid var(--subtle-border);
+    border: 2px solid var(--border-subtle);
     border-radius: var(--radius-md);
     color: var(--navy);
     font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.2s ease;
+    font-family: var(--font-sans);
   }
   
   .filter-btn:hover {
     border-color: var(--navy);
+    background: var(--surface-alt);
   }
   
   .filter-btn.active {
@@ -130,90 +178,115 @@ import { programme } from '../data/fairData';
     color: var(--white);
   }
   
-  .programme-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    margin-bottom: 3rem;
+  .programme-list {
+    max-width: 900px;
+    margin: 0 auto;
   }
   
-  .programme-card {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--subtle-border);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(22, 41, 74, 0.04);
+  .programme-entry {
+    margin-bottom: 2.5rem;
   }
   
-  .programme-card-header {
-    background: linear-gradient(to right, rgba(35, 99, 75, 0.08) 0%, transparent 100%);
-    padding: 1.25rem 1.5rem;
+  .programme-entry-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1rem;
-    border-bottom: 1px solid var(--subtle-border);
+    gap: 1.5rem;
+    margin-bottom: 0.875rem;
     flex-wrap: wrap;
   }
   
-  .programme-card-title {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--navy);
+  .programme-entry-main {
+    flex: 1;
+    min-width: 0;
   }
   
-  .programme-card-category {
+  .programme-entry-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--navy);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  
+  .programme-entry-category {
     display: inline-block;
-    background: rgba(35, 99, 75, 0.15);
+    background: rgba(35, 99, 75, 0.12);
     color: var(--evergreen);
-    padding: 0.25rem 0.75rem;
+    padding: 0.375rem 0.875rem;
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 600;
+    font-family: var(--font-sans);
   }
   
-  .programme-card-time {
+  .programme-entry-time-badge {
+    background: linear-gradient(135deg, var(--accent) 0%, #8A142B 100%);
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+  }
+  
+  .programme-entry-time {
+    color: var(--white);
     font-weight: 600;
-    color: var(--accent);
-    font-size: 1rem;
+    font-size: 0.95rem;
     white-space: nowrap;
   }
   
-  .programme-card-body {
-    padding: 1.25rem 1.5rem;
+  .programme-entry-body {
+    margin-bottom: 1.5rem;
   }
   
-  .programme-card-location {
+  .programme-entry-location {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
     color: var(--text-secondary);
     margin-bottom: 0.75rem;
     font-size: 0.9rem;
+    line-height: 1.5;
   }
   
-  .programme-card-desc {
+  .location-icon {
+    flex-shrink: 0;
+  }
+  
+  .programme-entry-desc {
     color: var(--text-primary);
     margin: 0;
-    line-height: 1.7;
+    line-height: 1.8;
+    font-size: 1rem;
   }
   
-  .print-section {
+  .programme-entry-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-subtle) 0%, transparent 100%);
+  }
+  
+  .programme-footer {
     text-align: center;
     padding-top: 2rem;
-    border-top: 2px solid var(--subtle-border);
+    border-top: 2px solid var(--border-subtle);
+    margin-top: 3rem;
   }
   
   .print-btn {
     background: var(--navy);
     color: var(--white);
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 2rem;
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.95rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-sans);
+    transition: all 0.2s ease;
   }
   
   .print-btn:hover {
     background: #0f1f3a;
+    transform: translateY(-2px);
   }
   
   .print-note {
@@ -225,40 +298,63 @@ import { programme } from '../data/fairData';
   @media print {
     .navbar,
     .footer,
-    .filters,
-    .print-section {
+    .filters-container,
+    .programme-footer {
       display: none !important;
     }
     
     .page-header {
       background: white !important;
       color: black !important;
-      padding: 1rem 0;
+      padding: 1.5rem 0;
+      border-bottom: 2px solid black;
+    }
+    
+    .page-header::before {
+      display: none;
+    }
+    
+    .section-label {
+      color: black !important;
     }
     
     .page-title {
       color: black !important;
-      font-size: 2rem;
+      font-size: 2.5rem;
     }
     
     .page-subtitle {
       color: black !important;
     }
     
-    .programme-card {
+    .programme-entry {
       break-inside: avoid;
-      border: 2px solid #ccc;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
     
-    .programme-card-header {
-      background: #f5f5f5 !important;
+    .programme-entry-time-badge {
+      background: white !important;
+      border: 2px solid black;
+    }
+    
+    .programme-entry-time {
+      color: black !important;
+    }
+    
+    .programme-entry-category {
+      background: white !important;
+      border: 1px solid black;
+      color: black !important;
     }
   }
   
   @media (max-width: 640px) {
-    .programme-card-header {
+    .programme-entry-header {
       flex-direction: column;
+    }
+    
+    .programme-entry-title {
+      font-size: 1.5rem;
     }
     
     .filters {
