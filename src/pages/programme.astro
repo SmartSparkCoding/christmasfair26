@@ -332,8 +332,15 @@ const categories = ['All', ...Array.from(new Set(programme.map((item) => item.ca
     }
 
     .entry__tag {
-      color: #000;
-      border-color: #999;
+      color: #333;
+      border: 0;
+      padding: 0;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+    }
+
+    @page {
+      margin: 18mm 16mm;
     }
 
     .entry__description {
