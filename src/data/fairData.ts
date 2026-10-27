@@ -113,56 +113,112 @@ export const programme = [
 ];
 
 /**
- * The 2026 stall list. The PFA's document carries last year's list in black and
- * this year's roster in blue; the blue table is reproduced here, with duplicates
- * removed ("It has to be pretty" appears twice) and obvious mis-spellings of
- * trading names corrected. "Ellis Amusements" (the fairground operator) and
- * "Photo room - Senior school ?" (still a question in the document) are not
- * published as stalls.
+ * The 2026 stall list, from the blue table in the PFA document.
+ *
+ * `url` is only set where a website could be positively identified as belonging
+ * to that stallholder (checked against location and product, not just a name
+ * match). Stalls without a confirmed site have no `url` and are shown as plain
+ * text rather than linking somewhere wrong.
+ *
+ * "Warehore Vineyard" is corrected to Warehorne Vineyard: that is the name of
+ * the vineyard at Warehorne Road, Ashford, and no "Warehore Vineyard" exists.
  */
 export const independentStalls = [
-  "Caroline's Crafty Crochet",
-  "Blue Farm Cottage Crafts",
-  "Meander Jewellery",
-  "Fox & Bloom",
-  "Hand Made in Hythe",
-  "Neal's Yard Remedies",
-  "Pop Goes The Balloon",
-  "Warehore Vineyard",
-  "It has to be pretty",
-  "Soulmate Spirits",
-  "The Granary Spa",
-  "By Wuzzie",
-  "Zoe Robyn Jewellery",
-  "Molly Bishop Art",
-  "Tina Laker",
-  "Season",
-  "Ivy & Rose Bloom Bar",
-  "Kids stall",
-  "Woodchurch Vineyard",
-  "Homeplus Furniture",
-  "The Small Batch Company",
-  "Vintage Games",
-  "Baby Adore",
-  "Binks",
+  { name: "Caroline's Crafty Crochet" },
+  { name: "Blue Farm Cottage Crafts" },
+  { name: "Meander Jewellery" },
+  { name: "Fox & Bloom", url: "https://www.foxandbloom.co.uk/" },
+  { name: "Hand Made in Hythe" },
+  { name: "Neal's Yard Remedies" },
+  { name: "Pop Goes The Balloon" },
+  { name: "Warehorne Vineyard", url: "https://www.warehornevineyard.co.uk/" },
+  { name: "It has to be pretty" },
+  { name: "Soulmate Spirits", url: "https://www.soulmatespirits.co.uk/" },
+  { name: "The Granary Spa", url: "https://www.thegranaryspa.co.uk/" },
+  { name: "By Wuzzie" },
+  { name: "Zoe Robyn Jewellery", url: "https://www.zoerobynjewellery.com/" },
+  { name: "Molly Bishop Art" },
+  { name: "Tina Laker" },
+  { name: "Season" },
+  { name: "Ivy & Rose Bloom Bar" },
+  { name: "Kids stall" },
+  { name: "Woodchurch Vineyard", url: "https://woodchurchwine.co.uk/" },
+  { name: "Homeplus Furniture" },
+  { name: "The Small Batch Company" },
+  { name: "Vintage Games" },
+  { name: "Baby Adore", url: "https://babyadore.co.uk/" },
+  { name: "Binks" },
 ];
 
+/**
+ * School & PFA stalls. Each one opens a short in-site popup. `detail` and
+ * `location` only contain what the PFA document actually states; anything it
+ * does not describe is left out rather than invented.
+ */
 export const schoolPFASstalls = [
-  "Raffle",
-  "Chocolate tombola",
-  "Bottle tombola",
-  "Games / Teddy tombola",
-  "Toys & Books",
-  "Cafe",
-  "100 club",
-  "Impact Squad (Senior School)",
-  "Horsebox / Mulled wine",
-  "Santa's Grotto",
-  "Popcorn & sweet treats",
-  "PFA Kids",
+  {
+    name: "Raffle",
+    location: "Main Reception",
+    detail:
+      "Tickets are £1 each for the everyday raffle and £5 each for the super raffle, available from reception on the day. Both raffles are drawn at 3:15pm.",
+  },
+  {
+    name: "Chocolate tombola",
+    detail: "A tombola stall run by the PFA, with chocolate prizes.",
+  },
+  {
+    name: "Bottle tombola",
+    detail: "A tombola stall run by the PFA, with bottles as prizes.",
+  },
+  {
+    name: "Games / Teddy tombola",
+    detail: "Games and a teddy tombola run by the PFA.",
+  },
+  {
+    name: "Toys & Books",
+    detail: "A PFA stall selling toys and books.",
+  },
+  {
+    name: "Cafe",
+    location: "Friars Hall",
+    detail:
+      "The Nordic Café is a traditional Christmas café serving hot food, homemade cakes and refreshments. Take a break and enjoy a selection of festive treats.",
+  },
+  {
+    name: "100 club",
+    detail:
+      "The PFA's 100 Club, a private lottery open to parents, staff and friends of the school.",
+  },
+  {
+    name: "Impact Squad (Senior School)",
+    detail:
+      "A senior school group. The Impact Squad has been making items to sell on the PFA Christmas Fair stall.",
+  },
+  {
+    name: "Horsebox / Mulled wine",
+    detail:
+      "Mulled wine and Baileys hot chocolate served from the horse box. The document does not yet confirm where it will be sited.",
+  },
+  {
+    name: "Santa's Grotto",
+    location: "Down the stairs past the Friars Hall entrance",
+    detail:
+      "Open 12:00pm – 4:00pm. Slots run every half an hour, and limited places are available to turn up on the day. Please keep to your allocated pre-booked time.",
+  },
+  {
+    name: "Popcorn & sweet treats",
+    detail: "A PFA stall with popcorn and sweet treats.",
+  },
+  {
+    name: "PFA Kids",
+    detail: "A PFA stall aimed at younger visitors.",
+  },
 ];
 
-export const allStalls = Array.from(new Set([...independentStalls, ...schoolPFASstalls]));
+export const allStalls = [
+  ...independentStalls.map((stall) => stall.name),
+  ...schoolPFASstalls.map((stall) => stall.name),
+];
 
 export const raffleInfo = {
   tickets: {

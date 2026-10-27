@@ -4,22 +4,8 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { independentStalls, schoolPFASstalls } from '../data/fairData';
 
-const groups = [
-  {
-    id: 'independent',
-    title: 'Independent stallholders',
-    intro: 'Local makers, growers and independent businesses from Ashford and the surrounding area.',
-    stalls: independentStalls,
-  },
-  {
-    id: 'school',
-    title: 'School & PFA stalls',
-    intro: 'Run by the Parents & Friends Association and school groups, raising funds for the school community.',
-    stalls: schoolPFASstalls,
-  },
-];
-
 const totalStalls = independentStalls.length + schoolPFASstalls.length;
+const linkedCount = independentStalls.filter((stall) => stall.url).length;
 ---
 
 <BaseLayout
@@ -34,8 +20,8 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
         <p class="page-header__label">Stall directory</p>
         <h1 class="page-header__title">Stalls &amp; shopping</h1>
         <p class="page-header__intro">
-          {totalStalls} stalls of handmade gifts, crafts, wines and seasonal treats across Harper Hall
-          and the rest of the Great Chart site.
+          {totalStalls} stalls of handmade gifts, crafts, wines and seasonal treats across Harper Hall and
+          the rest of the Great Chart site.
         </p>
       </div>
     </header>
@@ -56,23 +42,74 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
           <p class="search-status" id="searchStatus" aria-live="polite">{totalStalls} stalls</p>
         </div>
 
-        {
-          groups.map((group) => (
-            <section class="stall-group" data-group={group.id}>
-              <div class="group-head">
-                <h2 class="group-title">{group.title}</h2>
-                <p class="group-intro">{group.intro}</p>
-              </div>
-              <ul class="stall-list">
-                {group.stalls.map((stall) => (
-                  <li class="stall" data-name={stall.toLowerCase()}>
-                    <span class="stall-name">{stall}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))
-        }
+        <section class="stall-group">
+          <div class="group-head">
+            <h2 class="group-title">Independent stallholders</h2>
+            <p class="group-intro">
+              {`Local makers, growers and independent businesses from Ashford and the surrounding area. ${linkedCount} of them have a website you can visit.`}
+            </p>
+          </div>
+          <ul class="stall-list">
+            {
+              independentStalls.map((stall) => (
+                <li class="stall-item" data-name={stall.name.toLowerCase()}>
+                  {stall.url ? (
+                    <a
+                      class="stall stall--link"
+                      href={stall.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span class="stall-name">{stall.name}</span>
+                      <span class="stall-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                          <path d="M7 17 17 7M17 7H9M17 7v8" />
+                        </svg>
+                      </span>
+                      <span class="sr-only">(opens their website in a new tab)</span>
+                    </a>
+                  ) : (
+                    <span class="stall">
+                      <span class="stall-name">{stall.name}</span>
+                    </span>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="stall-group">
+          <div class="group-head">
+            <h2 class="group-title">School &amp; PFA stalls</h2>
+            <p class="group-intro">
+              Run by the Parents &amp; Friends Association and school groups, raising funds for the school
+              community. Tap a stall for a little more detail.
+            </p>
+          </div>
+          <ul class="stall-list">
+            {
+              schoolPFASstalls.map((stall) => (
+                <li class="stall-item" data-name={stall.name.toLowerCase()}>
+                  <button
+                    type="button"
+                    class="stall stall--button"
+                    data-stall-name={stall.name}
+                    data-stall-location={stall.location ?? ''}
+                    data-stall-detail={stall.detail ?? ''}
+                  >
+                    <span class="stall-name">{stall.name}</span>
+                    <span class="stall-arrow" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </span>
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
 
         <p class="empty-state" id="emptyState" hidden>
           No stalls match your search. <button type="button" class="empty-reset" id="clearSearch">
@@ -84,20 +121,31 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
           <h2>The Hall of Stalls</h2>
           <p>
             Most stalls are in Harper Hall. School and PFA stalls are spread across Main Reception,
-            Friars Hall and the front of school. Ask at the Welcome Point in Main Reception if you
-            need help finding a stallholder.
+            Friars Hall and the front of school. Ask at the Welcome Point in Main Reception if you need
+            help finding a stallholder.
           </p>
         </aside>
       </div>
     </section>
   </main>
 
+  <dialog class="stall-dialog" id="stallDialog" aria-labelledby="stallDialogTitle">
+    <div class="stall-dialog__inner">
+      <p class="stall-dialog__label">School &amp; PFA stall</p>
+      <h2 class="stall-dialog__title" id="stallDialogTitle"></h2>
+      <p class="stall-dialog__location" data-dialog-location hidden></p>
+      <p class="stall-dialog__detail" data-dialog-detail></p>
+      <button type="button" class="stall-dialog__close" data-dialog-close>Close</button>
+    </div>
+  </dialog>
+
   <Footer />
 </BaseLayout>
 
 <script>
+  /* ---------- Search ---------- */
   const input = document.getElementById('stallSearch') as HTMLInputElement | null;
-  const stalls = Array.from(document.querySelectorAll<HTMLElement>('.stall'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.stall-item'));
   const groups = Array.from(document.querySelectorAll<HTMLElement>('.stall-group'));
   const emptyState = document.getElementById('emptyState');
   const status = document.getElementById('searchStatus');
@@ -107,21 +155,18 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
     const term = rawTerm.trim().toLowerCase();
     let visible = 0;
 
-    stalls.forEach((stall) => {
-      const matches = !term || (stall.dataset.name ?? '').includes(term);
-      stall.hidden = !matches;
+    items.forEach((item) => {
+      const matches = !term || (item.dataset.name ?? '').includes(term);
+      item.hidden = !matches;
       if (matches) visible += 1;
     });
 
     groups.forEach((group) => {
-      const hasVisible = group.querySelectorAll<HTMLElement>('.stall:not([hidden])').length > 0;
-      group.hidden = !hasVisible;
+      group.hidden = group.querySelectorAll('.stall-item:not([hidden])').length === 0;
     });
 
     if (emptyState) emptyState.hidden = visible > 0;
-    if (status) {
-      status.textContent = `${visible} ${visible === 1 ? 'stall' : 'stalls'}`;
-    }
+    if (status) status.textContent = `${visible} ${visible === 1 ? 'stall' : 'stalls'}`;
   };
 
   input?.addEventListener('input', () => runSearch(input.value));
@@ -132,6 +177,52 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
       input.focus();
     }
     runSearch('');
+  });
+
+  /* ---------- PFA stall popups ---------- */
+  const dialog = document.getElementById('stallDialog') as HTMLDialogElement | null;
+  const dialogTitle = document.getElementById('stallDialogTitle');
+  const dialogLocation = dialog?.querySelector<HTMLElement>('[data-dialog-location]');
+  const dialogDetail = dialog?.querySelector<HTMLElement>('[data-dialog-detail]');
+  let lastTrigger: HTMLElement | null = null;
+
+  const closeDialog = () => dialog?.close();
+
+  document.querySelectorAll<HTMLButtonElement>('.stall--button').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!dialog || !dialogTitle || !dialogLocation || !dialogDetail) return;
+
+      lastTrigger = button;
+      dialogTitle.textContent = button.dataset.stallName ?? 'Stall';
+
+      const location = button.dataset.stallLocation?.trim();
+      if (location) {
+        dialogLocation.textContent = location;
+        dialogLocation.hidden = false;
+      } else {
+        dialogLocation.textContent = '';
+        dialogLocation.hidden = true;
+      }
+
+      dialogDetail.textContent = button.dataset.stallDetail ?? '';
+
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute('open', '');
+      }
+    });
+  });
+
+  dialog?.querySelector('[data-dialog-close]')?.addEventListener('click', closeDialog);
+
+  // Click on the backdrop closes the dialog.
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) closeDialog();
+  });
+
+  dialog?.addEventListener('close', () => {
+    lastTrigger?.focus();
   });
 </script>
 
@@ -229,15 +320,118 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
     border-bottom: 1px solid var(--border-subtle);
   }
 
-  .stall {
-    padding: 0.95rem 1.5rem 0.95rem 0;
+  .stall-item {
     border-top: 1px solid var(--border-subtle);
+    min-width: 0;
+  }
+
+  .stall {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.95rem 1.5rem 0.95rem 0;
+    background: none;
+    border: 0;
+    text-align: left;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    overflow: hidden;
+    transition: color 0.2s ease, background-color 0.2s ease, padding-left 0.25s ease;
   }
 
   .stall-name {
     font-size: 0.97rem;
-    color: var(--text-primary);
     line-height: 1.5;
+  }
+
+  .stall-arrow {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--accent);
+    opacity: 0.4;
+    transform: translateX(-2px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .stall-arrow svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Linked stalls: obvious affordance on hover and keyboard focus. */
+  .stall--link:hover,
+  .stall--link:focus-visible {
+    color: var(--accent);
+    padding-left: 0.5rem;
+  }
+
+  .stall--link:hover .stall-arrow,
+  .stall--link:focus-visible .stall-arrow,
+  .stall--button:hover .stall-arrow,
+  .stall--button:focus-visible .stall-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .stall--button:hover,
+  .stall--button:focus-visible {
+    color: var(--navy);
+    padding-left: 0.5rem;
+  }
+
+  .stall--button .stall-arrow {
+    color: var(--secondary);
+  }
+
+  /* Mobile / touch: no hover, so show a persistent marker and a small glint. */
+  @media (hover: none) {
+    .stall-arrow {
+      opacity: 0.55;
+      transform: translateX(0);
+    }
+
+    .stall--link .stall-name,
+    .stall--button .stall-name {
+      background-image: linear-gradient(
+        100deg,
+        transparent 0%,
+        transparent 42%,
+        rgba(212, 173, 114, 0.55) 50%,
+        transparent 58%,
+        transparent 100%
+      );
+      background-size: 250% 100%;
+      background-repeat: no-repeat;
+      background-position: 130% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .stall--link:active .stall-name,
+    .stall--button:active .stall-name {
+      animation: stall-glint 0.7s ease-out;
+    }
+  }
+
+  @keyframes stall-glint {
+    from {
+      background-position: 130% 0;
+    }
+    to {
+      background-position: -60% 0;
+    }
   }
 
   .empty-state {
@@ -254,6 +448,7 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
     color: var(--accent);
     font-weight: 600;
     text-decoration: underline;
+    font-family: var(--font-sans);
   }
 
   .location-note {
@@ -277,6 +472,73 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
     margin: 0;
   }
 
+  /* ---------- Popup ---------- */
+  .stall-dialog {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: min(30rem, calc(100% - 2rem));
+    width: 100%;
+    color: var(--text-primary);
+  }
+
+  .stall-dialog::backdrop {
+    background: rgba(22, 41, 74, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  .stall-dialog__inner {
+    background: var(--pure-white);
+    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--soft-gold);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .stall-dialog__label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .stall-dialog__title {
+    font-size: 1.7rem;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+  }
+
+  .stall-dialog__location {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--border-subtle);
+  }
+
+  .stall-dialog__detail {
+    font-size: 0.97rem;
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+
+  .stall-dialog__close {
+    background: var(--navy);
+    color: var(--pure-white);
+    border: 0;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .stall-dialog__close:hover {
+    background: var(--accent);
+  }
+
   @media (max-width: 900px) {
     .stall-list {
       grid-template-columns: repeat(2, 1fr);
@@ -298,6 +560,13 @@ const totalStalls = independentStalls.length + schoolPFASstalls.length;
 
     .group-title {
       font-size: 1.55rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stall--link:active .stall-name,
+    .stall--button:active .stall-name {
+      animation: none;
     }
   }
 </style>

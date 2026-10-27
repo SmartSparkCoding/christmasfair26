@@ -68,6 +68,38 @@ carried-over rather than current.
   coordinates or extra facilities have been added. Where the PFA has not published something
   (parking detail, accessibility statement, per-trader locations) the site says so.
 
+### Stall website links
+
+Seven of the 24 independent stallholders have a website linked from the directory. A link was only
+added where the business could be positively identified as the same stallholder — location, product
+and name all matched. Anything ambiguous was left unlinked rather than guessed.
+
+| Stall | Website | How it was matched |
+| --- | --- | --- |
+| Fox & Bloom | https://www.foxandbloom.co.uk/ | Natural skincare made in Kent; same founder and product type |
+| Warehorne Vineyard | https://www.warehornevineyard.co.uk/ | Family vineyard at Warehorne Road, Ashford (see note below) |
+| Soulmate Spirits | https://www.soulmatespirits.co.uk/ | Soulmate Spirits Ltd, 134 Sandyhurst Lane, Ashford |
+| The Granary Spa | https://www.thegranaryspa.co.uk/ | Award-winning spa at Worten Lower Yard, Great Chart, Ashford |
+| Zoe Robyn Jewellery | https://www.zoerobynjewellery.com/ | Silversmith based near Ashford, Kent |
+| Woodchurch Vineyard | https://woodchurchwine.co.uk/ | Woodchurch Wine Estate, near Ashford |
+| Baby Adore | https://babyadore.co.uk/ | Hand-crocheted baby items, UK |
+
+Deliberately **not** linked: Caroline's Crafty Crochet, Blue Farm Cottage Crafts, Meander Jewellery,
+Hand Made in Hythe, Pop Goes The Balloon, It has to be pretty, By Wuzzie, Molly Bishop Art, Tina
+Laker, Season, Ivy & Rose Bloom Bar, Kids stall, Homeplus Furniture, The Small Batch Company, Vintage
+Games and Binks. Either no website could be found, or several same-name businesses exist and there
+was no reliable way to tell which one is the stallholder. **Neal's Yard Remedies** is a national
+brand but the stall is likely an independent consultant, so it is not linked to the corporate site.
+
+**Warehorne spelling.** The PFA document lists "Warehore Vineyard". No such vineyard exists; the
+family-run vineyard at Warehorne Road, Ashford is Warehorne Vineyard, so the directory uses the
+correct spelling. Worth confirming with the PFA in case they meant a different trader.
+
+PFA stalls are buttons rather than links: each opens a small in-site popup with the stall name, its
+location where the document gives one, and a one-line description built only from documented facts.
+Popup text is deliberately short and will need extending once the PFA supplies details for the
+tombolas, sweet stall and kids stall.
+
 ## Design system
 
 Tokens live in `src/styles/global.css`:
