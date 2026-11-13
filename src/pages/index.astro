@@ -148,6 +148,20 @@ import { eventInfo, programme, allStalls } from '../data/fairData';
       </div>
     </section>
 
+    <section class="map-band">
+      <div class="container map-band__inner">
+        <div class="map-band__copy">
+          <p class="map-band__label">Fair map</p>
+          <h2 class="map-band__title">Find your way around</h2>
+          <p class="map-band__text">
+            Every stallholder has a number. See the plan of Harper Hall, the stalls outside it, and
+            where the café, grotto and rides sit relative to the main entrance.
+          </p>
+        </div>
+        <a href="/map" class="map-band__cta">Open the map</a>
+      </div>
+    </section>
+
     <!-- Programme preview -->
     <section class="programme">
       <div class="container">
@@ -542,6 +556,69 @@ import { eventInfo, programme, allStalls } from '../data/fairData';
   }
 
   /* ---------- Highlights ---------- */
+  .map-band {
+    background: var(--navy);
+    color: var(--pure-white);
+    padding: 3.25rem 0;
+  }
+
+  .map-band__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem 3rem;
+  }
+
+  .map-band__copy {
+    max-width: 46rem;
+  }
+
+  .map-band__label {
+    margin: 0 0 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--soft-gold);
+  }
+
+  .map-band__title {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--pure-white);
+  }
+
+  .map-band__text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .map-band__cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--soft-gold);
+    color: var(--navy);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .map-band__cta:hover,
+  .map-band__cta:focus-visible {
+    background: var(--pure-white);
+    transform: translateY(-1px);
+  }
+
   .highlights {
     padding: 5rem 0;
     background: #f2eee4;

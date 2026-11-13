@@ -1,0 +1,356 @@
+---
+import { siteZones, type SiteZone } from '../data/mapData';
+
+/** Greedy word wrap so labels stay inside their block. */
+function wrap(text: string, maxChars: number): string[] {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let line = '';
+
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length > maxChars && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  }
+
+  if (line) lines.push(line);
+  return lines.slice(0, 2);
+}
+
+const prepared = siteZones.map((zone) => {
+  const maxChars = Math.max(6, Math.floor(zone.w / 5.9));
+  const lines = wrap(zone.label, maxChars);
+  const sub = zone.sub && zone.sub.length <= maxChars ? zone.sub : undefined;
+  const lineHeight = 11;
+  const total = lines.length + (sub ? 1 : 0);
+  const startY = zone.y + zone.h / 2 - ((total - 1) * lineHeight) / 2 + 3.6;
+
+  return { ...zone, lines, sub, lineHeight, startY };
+});
+
+const legend: { kind: SiteZone['kind']; label: string }[] = [
+  { kind: 'building', label: 'Room or hall' },
+  { kind: 'stall', label: 'Stall' },
+  { kind: 'facility', label: 'Activity' },
+  { kind: 'outdoor', label: 'Outside' },
+  { kind: 'entrance', label: 'Entrance' },
+  { kind: 'path', label: 'Parking and paths' },
+];
+---
+
+<div class="site-plan" data-site-plan>
+  <div class="site-plan__canvas">
+    <svg
+      class="site-plan__svg"
+      viewBox="0 0 1000 800"
+      role="group"
+      aria-label="Schematic plan of the fair site: the main building with the halls and rooms, and the grounds below with rides, gazebos and parking"
+    >
+      <rect class="plan-panel" x="20" y="0" width="960" height="530" rx="20" />
+      <rect class="plan-panel" x="20" y="552" width="960" height="240" rx="20" />
+
+      <text class="plan-panel__label" x="44" y="28">Main building</text>
+      <text class="plan-panel__label" x="44" y="580">Grounds</text>
+
+      {
+        prepared.map((zone) => (
+          <g
+            class:list={['zone', `zone--${zone.kind}`]}
+            data-zone-id={zone.id}
+            data-zone-label={zone.label}
+            data-zone-sub={zone.sub ?? ''}
+            data-zone-detail={zone.detail ?? ''}
+            tabindex={zone.detail ? '0' : undefined}
+            role={zone.detail ? 'button' : undefined}
+          >
+            <title>{zone.sub ? `${zone.label} (${zone.sub})` : zone.label}</title>
+            <rect x={zone.x} y={zone.y} width={zone.w} height={zone.h} rx="7" />
+            {zone.lines.map((line, index) => (
+              <text
+                x={zone.x + zone.w / 2}
+                y={zone.startY + index * zone.lineHeight}
+                text-anchor="middle"
+              >
+                {line}
+              </text>
+            ))}
+            {zone.sub && (
+              <text
+                class="zone__sub"
+                x={zone.x + zone.w / 2}
+                y={zone.startY + zone.lines.length * zone.lineHeight}
+                text-anchor="middle"
+              >
+                {zone.sub}
+              </text>
+            )}
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+
+  <div class="site-plan__footer">
+    <ul class="plan-legend">
+      {
+        legend.map((entry) => (
+          <li class:list={['plan-legend__item', `zone--${entry.kind}`]}>
+            <span class="plan-legend__swatch" aria-hidden="true" />
+            {entry.label}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="plan-detail" aria-live="polite">
+      <p class="plan-detail__label">Tap a labelled area for more</p>
+      <p class="plan-detail__text" data-site-detail>
+        This is a schematic, not to scale. It shows where everything sits relative to the main
+        entrance.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .site-plan {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .site-plan__canvas {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .site-plan__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .plan-panel {
+    fill: var(--surface-tint);
+    stroke: var(--border-subtle);
+    stroke-width: 1.5;
+  }
+
+  .plan-panel__label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    fill: var(--text-secondary);
+  }
+
+  .zone {
+    outline: none;
+  }
+
+  .zone rect {
+    stroke-width: 1.5;
+    transition:
+      filter 0.15s ease,
+      stroke 0.15s ease;
+  }
+
+  .zone text {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  .zone__sub {
+    font-size: 8.6px;
+    font-weight: 500;
+    opacity: 0.75;
+  }
+
+  .zone--building rect {
+    fill: #dfe4ee;
+    stroke: #b6c1d6;
+  }
+
+  .zone--building text {
+    fill: var(--navy);
+  }
+
+  .zone--stall rect {
+    fill: var(--evergreen);
+    stroke: #1a4d3a;
+  }
+
+  .zone--stall text {
+    fill: var(--pure-white);
+  }
+
+  .zone--facility rect {
+    fill: var(--christmas-burgundy);
+    stroke: #7d1228;
+  }
+
+  .zone--facility text {
+    fill: var(--pure-white);
+  }
+
+  .zone--outdoor rect {
+    fill: #f4e3c6;
+    stroke: var(--soft-gold);
+  }
+
+  .zone--outdoor text {
+    fill: #6b4a1e;
+  }
+
+  .zone--entrance rect {
+    fill: var(--navy);
+    stroke: var(--navy);
+  }
+
+  .zone--entrance text {
+    fill: var(--pure-white);
+  }
+
+  .zone--path rect {
+    fill: #e8e6e1;
+    stroke: #c9c5bc;
+    stroke-dasharray: 5 4;
+  }
+
+  .zone--path text {
+    fill: var(--text-secondary);
+  }
+
+  .zone[tabindex]:hover rect,
+  .zone[tabindex]:focus-visible rect {
+    stroke: var(--soft-gold);
+    stroke-width: 3;
+    filter: drop-shadow(0 3px 8px rgba(22, 41, 74, 0.22));
+  }
+
+  .site-plan__footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .plan-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .plan-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .plan-legend__swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+
+  .plan-legend__item.zone--building .plan-legend__swatch {
+    background: #dfe4ee;
+    border-color: #b6c1d6;
+  }
+
+  .plan-legend__item.zone--stall .plan-legend__swatch {
+    background: var(--evergreen);
+    border-color: #1a4d3a;
+  }
+
+  .plan-legend__item.zone--facility .plan-legend__swatch {
+    background: var(--christmas-burgundy);
+    border-color: #7d1228;
+  }
+
+  .plan-legend__item.zone--outdoor .plan-legend__swatch {
+    background: #f4e3c6;
+    border-color: var(--soft-gold);
+  }
+
+  .plan-legend__item.zone--entrance .plan-legend__swatch {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .plan-legend__item.zone--path .plan-legend__swatch {
+    background: #e8e6e1;
+    border-color: #c9c5bc;
+  }
+
+  .plan-detail {
+    border-left: 3px solid var(--soft-gold);
+    padding-left: 1rem;
+  }
+
+  .plan-detail__label {
+    margin: 0 0 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .plan-detail__text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 900px) {
+    .site-plan__footer {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-site-plan]');
+  if (root) {
+    const detail = root.querySelector<HTMLElement>('[data-site-detail]');
+    const interactive = Array.from(root.querySelectorAll<SVGGElement>('.zone[tabindex]'));
+
+    const show = (zone: SVGGElement) => {
+      if (!detail) return;
+      const label = zone.dataset.zoneLabel ?? '';
+      const sub = zone.dataset.zoneSub;
+      const text = zone.dataset.zoneDetail;
+      if (!text) return;
+
+      detail.textContent = sub ? `${label} (${sub}). ${text}` : `${label}. ${text}`;
+    };
+
+    interactive.forEach((zone) => {
+      zone.addEventListener('click', () => show(zone));
+      zone.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          show(zone);
+        }
+      });
+    });
+  }
+</script>
