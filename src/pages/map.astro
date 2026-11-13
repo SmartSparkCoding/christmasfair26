@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import HarperHallMap from '../components/HarperHallMap.astro';
+import SitePlan from '../components/SitePlan.astro';
+import { harperHallStalls, offHallStalls } from '../data/mapData';
+import { eventInfo } from '../data/fairData';
+---
+
+<BaseLayout
+  title="Fair Map | Ashford School Christmas Fair 2026"
+  description="Interactive map of the Ashford School Christmas Fair 2026: find every stallholder in Harper Hall, plus the café, Santa's Grotto, raffle, rides and gazebos across the site."
+>
+  <Navbar />
+
+  <main id="main-content">
+    <header class="page-header">
+      <div class="container">
+        <p class="page-header__label">Fair map</p>
+        <h1 class="page-header__title">Find your way around</h1>
+        <p class="page-header__intro">
+          Every stallholder has a number. Tap a stall on the plan to see who is there, or search for
+          a name below.
+        </p>
+      </div>
+    </header>
+
+    <section class="map-section">
+      <div class="container">
+        <div class="map-heading">
+          <h2>The Hall of Stalls</h2>
+          <p>
+            Harper Hall holds stalls 1 to 22 in a ring around the room. Stalls 23 to 27 are just
+            outside, or in gazebos on the lawn.
+          </p>
+        </div>
+
+        <HarperHallMap />
+
+        <div class="map-note">
+          <h3>Stalls outside Harper Hall</h3>
+          <ul class="outside-list">
+            {
+              offHallStalls.map((stall) => (
+                <li>
+                  <span class="outside-list__no">{stall.no}</span>
+                  <span>
+                    <strong>{stall.name}</strong>
+                    <span class="outside-list__where">{stall.where}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-section map-section--tint">
+      <div class="container">
+        <div class="map-heading">
+          <h2>The whole site</h2>
+          <p>
+            Where the halls, café, grotto, rides and gazebos sit relative to the main entrance. This
+            is a schematic, so it shows the layout rather than exact distances.
+          </p>
+        </div>
+
+        <SitePlan />
+      </div>
+    </section>
+
+    <section class="map-section">
+      <div class="container">
+        <div class="map-heading">
+          <h2>Stallholder directory</h2>
+          <p>All {harperHallStalls.length + offHallStalls.length} numbered stalls, in order.</p>
+        </div>
+
+        <ol class="directory">
+          {
+            [...harperHallStalls, ...offHallStalls].map((stall) => (
+              <li class="directory__item">
+                <span class="directory__no">{stall.no}</span>
+                <span class="directory__name">{stall.name}</span>
+                <span class="directory__where">
+                  {'where' in stall ? stall.where : 'Harper Hall'}
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+
+        <p class="map-disclaimer">
+          It has to be pretty has two stalls (15 and 16) and so does PFA Kids (21 and 22), which is
+          why those names appear twice.
+        </p>
+
+        <p class="map-disclaimer">
+          Stall numbers and positions are taken from the PFA's floor plan and site plan. Layouts can
+          change on the day, so follow signage and ask at the Welcome Point in Main Reception if you
+          cannot find someone. The fair runs {eventInfo.time} on {eventInfo.date}.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .map-section {
+    padding: 3rem 0;
+  }
+
+  .map-section--tint {
+    background: var(--surface-tint);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .map-heading {
+    max-width: 62ch;
+    margin-bottom: 1.75rem;
+  }
+
+  .map-heading h2 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .map-heading p {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  .map-note {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+  }
+
+  .map-note h3 {
+    margin: 0 0 1rem;
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .outside-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .outside-list li {
+    display: flex;
+    gap: 0.85rem;
+    align-items: baseline;
+  }
+
+  .outside-list__no {
+    flex: 0 0 1.9rem;
+    height: 1.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--evergreen);
+    color: var(--pure-white);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .outside-list__where {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .directory {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.5rem 1.5rem;
+  }
+
+  .directory__item {
+    display: grid;
+    grid-template-columns: 1.9rem 1fr;
+    grid-template-areas:
+      'no name'
+      'no where';
+    column-gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .directory__no {
+    grid-area: no;
+    align-self: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .directory__name {
+    grid-area: name;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .directory__where {
+    grid-area: where;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .map-disclaimer {
+    margin: 2rem 0 0;
+    max-width: 70ch;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+</style>

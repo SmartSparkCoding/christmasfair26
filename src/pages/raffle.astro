@@ -44,7 +44,24 @@ import { raffleInfo, superRafflePrizes, everydayRafflePrizes } from '../data/fai
           </div>
         </dl>
 
-        <p class="purchase-note">{raffleInfo.purchase} {raffleInfo.drawDescription}</p>
+        <p class="purchase-note">
+          {raffleInfo.purchase}
+          <span class="purchase-note__books">
+            Or buy a {raffleInfo.books.everyday} for the everyday raffle, and a
+            {raffleInfo.books.super} for the super raffle.
+          </span>
+          {raffleInfo.drawDescription}
+        </p>
+
+        <p class="purchase-cta">
+          <a class="button button--primary" href={raffleInfo.onlineUrl} target="_blank" rel="noopener noreferrer">
+            Buy tickets online
+            <span class="sr-only">(opens the PFA ticket page in a new tab)</span>
+          </a>
+          <span class="purchase-cta__note">
+            Tickets are sold through the PFA's page on PTA Events.
+          </span>
+        </p>
 
         <section class="prize-block" aria-labelledby="super-prizes">
           <div class="prize-head">
@@ -123,7 +140,45 @@ import { raffleInfo, superRafflePrizes, everydayRafflePrizes } from '../data/fai
     color: var(--text-secondary);
     line-height: 1.75;
     max-width: 46rem;
-    margin-bottom: 3rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .purchase-note__books {
+    display: block;
+    color: var(--text-primary);
+  }
+
+  .purchase-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem 1.1rem;
+    margin: 0 0 3rem;
+  }
+
+  .purchase-cta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--pure-white);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .purchase-cta a:hover,
+  .purchase-cta a:focus-visible {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .purchase-cta__note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
   }
 
   .prize-block {

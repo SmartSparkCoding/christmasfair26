@@ -225,7 +225,12 @@ export const raffleInfo = {
     everyday: { price: "£1 each" },
     super: { price: "£5 each", limit: 200 }
   },
-  purchase: "Tickets can be purchased from reception on the day.",
+  purchase: "Tickets can be purchased from reception on the day, or online in advance.",
+  books: {
+    everyday: "book of 5 for £5.00",
+    super: "book of 5 for £25.00"
+  },
+  onlineUrl: "https://www.pta-events.co.uk/ashfordschoolpfa/index.cfm",
   drawTime: "3:15 pm (Main reception)",
   drawDescription: "Super raffle followed by everyday raffle."
 };
