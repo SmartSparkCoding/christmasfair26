@@ -107,7 +107,7 @@ export const programme = [
     end: "15:15",
     location: "Main Reception",
     category: "Event",
-    description: "Super raffle followed by the everyday raffle.",
+    description: "Super Raffle followed by the Christmas Fair Raffle.",
     confirmed: true,
   },
 ];
@@ -160,7 +160,7 @@ export const schoolPFASstalls = [
     name: "Raffle",
     location: "Main Reception",
     detail:
-      "Tickets are £1 each for the everyday raffle and £5 each for the super raffle, available from reception on the day. Both raffles are drawn at 3:15pm.",
+      "Tickets are £1 each for the Christmas Fair Raffle and £5 each for the Super Raffle, available from reception on the day. Both raffles are drawn at 3:15pm.",
   },
   {
     name: "Chocolate tombola",
@@ -222,8 +222,8 @@ export const allStalls = [
 
 export const raffleInfo = {
   tickets: {
-    everyday: { price: "£1 each" },
-    super: { price: "£5 each", limit: 200 }
+    everyday: { name: "Christmas Fair Raffle", price: "£1 each" },
+    super: { name: "Super Raffle", price: "£5 each", limit: 200 }
   },
   purchase: "Tickets can be purchased from reception on the day, or online in advance.",
   books: {
@@ -231,75 +231,90 @@ export const raffleInfo = {
     super: "book of 5 for £25.00"
   },
   onlineUrl: "https://www.pta-events.co.uk/ashfordschoolpfa/index.cfm",
+  drawDate: "Saturday 28th November 2026, at Ashford Prep School",
   drawTime: "3:15 pm (Main reception)",
-  drawDescription: "Super raffle followed by everyday raffle."
+  drawDescription: "Super Raffle followed by the Christmas Fair Raffle."
 };
 
+export interface RafflePrize {
+  item: string;
+  value: string | null;
+  donor: string | null;
+  raffle: "super" | "everyday";
+}
+
 /**
- * 2026 super raffle prizes. Blue edits in the PFA document add the Neptune bar,
- * change the PFA cash prize to £150, put the Champney's hamper at £150, and add
- * the Boys Hall and Suzi Standen vouchers.
+ * Headline prizes from the 2026 raffle poster. The five Super Raffle prizes are
+ * the ones printed on the Super Raffle ticket stub; the other two are the top
+ * prizes in the £1 Christmas Fair Raffle.
  */
-export const superRafflePrizes = [
-  { item: "Neptune bar set up, worth £500", donor: "Matt from Neptune Bars" },
-  { item: "£150 cash", donor: "Ashford School PFA" },
-  { item: "£160 Kent Cookery voucher", donor: "Autumn from Kent Cookery School" },
-  { item: "£150 JET Aesthetics microneedling voucher", donor: "Jemma from Jet Aesthetics" },
-  { item: "£150 Champney's hamper", donor: "Eastwell Manor" },
-  { item: "Hogwarts Lego", donor: "Alanna from Maebil Lettings" },
-  { item: "Abbey Road exclusive visitor experience", donor: "Rebecca Hodges" },
-  { item: "£100 Boys Hall voucher", donor: null },
-  { item: "£102 Suzi Standen Pilates voucher", donor: null },
+export const topPrizes: RafflePrize[] = [
+  { item: "Neptune Bars set up", value: "£500", donor: "Matt from Neptune Bars", raffle: "super" },
+  { item: "James Carey PT sessions", value: "£200", donor: null, raffle: "everyday" },
+  { item: "PFA cash prize", value: "£150", donor: "Ashford School PFA", raffle: "super" },
+  { item: "Champneys hamper", value: "£150", donor: "Eastwell Manor", raffle: "super" },
+  { item: "Suzi Standen Pilates voucher", value: "£102", donor: null, raffle: "super" },
+  { item: "Boys Hall voucher", value: "£100", donor: null, raffle: "super" },
+  { item: "School Colours voucher", value: "£100", donor: null, raffle: "everyday" },
 ];
 
-export const everydayRafflePrizes = [
-  "Spazio Doors",
-  "PFA Coffee box",
-  "Kent & East Sussex Railway",
-  "School Colours",
-  "Leas cliff Hall",
-  "Charing point to point races",
-  "Wildwood family ticket",
-  "Stubbs restaurant",
-  "Biddenden Vineyard",
-  "Action Watersports",
-  "Neptune Bars",
-  "ELT Dynamics",
-  "Granary Spa",
-  "Port Lympne",
-  "Kind Planet Company",
-  "Westwell Wines",
-  "Cake Box - 8\" Cake voucher - Nina to collect",
-  "Docker Bakery",
-  "Godinton House",
-  "Wayfarer Wines",
-  "Kent Crisps - box",
-  "McCanns Brewery",
-  "Imagine Play centre",
-  "It has to be pretty",
-  "Kent Hampers",
-  "PrettyLittleSoaps",
-  "Season",
+/** What the £1 Christmas Fair Raffle ticket stub promises, in the PFA's words. */
+export const everydayRaffleCategories = [
+  "Spa & beauty vouchers",
+  "Restaurant vouchers",
+  "School Colours voucher",
+  "Wine tours & tasting",
+  "Retail vouchers",
+  "Family days out",
+  "Hampers",
+  "Lego City Airport",
+];
+
+/** The rest of the prizes on the 2026 poster, listed as the PFA printed them. */
+export const otherRafflePrizes = [
   "Caroline's Crafty Crochet",
-  "Zoe Robyn Jewellery",
-  "Park House Petals (TBC)",
-  "Happy Days Crafts",
-  "Warehorne Wines",
-  "Noble & Page",
   "Blue Farm Cottage Crafts",
+  "Meander Jewellery",
   "Fox & Bloom",
-  "Laura's stationary stash",
-  "Create Alchemy",
-  "Soulmate Spirits Ltd",
-  "Neals Yard Remedies",
-  "MoreThanBalloons",
+  "Hand Made in Hythe",
+  "Neal's Yard Remedies",
+  "Pop Goes The Balloon",
+  "Warehorne Vineyard",
+  "It Has To Be Pretty",
+  "Soul Mates Spirits",
+  "The Granary Spa",
+  "By Wuzzie",
+  "Zoe Robyn Jewellery",
+  "Simon James Home",
+  "Tina's Gnomes & Bags",
+  "Season",
+  "Ivy & Rose Bloom Bar",
+  "Woodchurch Vineyard",
+  "Homeplus Furniture",
   "The Small Batch Company",
-  "Bowjangles",
-  "The Boot Room Company",
-  "Meander",
-  "Nine Oaks Vineyard",
-  "Vintage games",
-  "The Yoga Man",
+  "Vintage Games",
+  "Baby Adore",
+  "Binks",
+  "PFA Hamper",
+  "PFA Hamper",
+  "PFA Hamper",
+  "PFA – 10 Hot Drinks Vouchers",
+  "Spazio Doors – £50 John Lewis Voucher",
+  "Pluckley Tea & Coffee Hamper",
+  "McArthurGlen Outlet – £20 Voucher",
+  "Matches Sports Bar Package",
+  "Gusbourne Flight Tasting Voucher",
+  "KESR Family Ticket",
+  "Stubbs Restaurant – £20 Voucher",
+  "Kind Planet Company Gift",
+  "Biddenden Vineyards Voucher",
+  "Wildwood Family Ticket",
+  "Maebil Lettings Ltd – Lego Set",
+  "Wye Beauty Voucher",
+  "Action Watersports Voucher",
+  "Harrisons Hair Voucher",
+  "Rare Breeds Family Day Ticket",
+  "Tickety Boo Gift",
 ];
 
 export const safetyInfo = {
