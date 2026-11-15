@@ -1,0 +1,334 @@
+---
+import MapFrame from './MapFrame.astro';
+
+const tables = [
+  ...[205, 255, 305, 375, 425, 475].map((y) => ({ x: 358, y, w: 76, h: 26 })),
+  ...[198, 248, 298, 375, 425, 475].map((y) => ({ x: 566, y, w: 76, h: 26 })),
+];
+
+const trees = [112, 247, 395, 545].map((cy) => ({ cx: 862, cy }));
+
+const year5 = [
+  { x: 57, w: 43 },
+  { x: 115, w: 70 },
+  { x: 200, w: 70 },
+  { x: 285, w: 70 },
+  { x: 365, w: 40 },
+];
+
+const notes = [
+  {
+    title: 'Food serving area',
+    text: 'Along the top wall. The queue runs one way, left to right, and finishes at the till.',
+  },
+  { title: 'Till', text: 'At the end of the serving run, on the right.' },
+  {
+    title: 'Seating area',
+    text: 'Tables and chairs in the middle of the hall, either side of the walkway.',
+  },
+  { title: 'Year 5 stalls', text: 'Along the bottom wall of the hall.' },
+  { title: 'Christmas trees', text: 'Four decorated trees down the right-hand side.' },
+];
+---
+
+<div class="cafe-plan">
+  <div class="cafe-plan__frame">
+    <MapFrame label="Christmas Café plan" hint="Swipe or drag to move around the plan.">
+    <svg
+      class="cafe-svg"
+      viewBox="0 0 1000 707"
+      role="group"
+      aria-label="Plan of the Christmas Café in Friars Hall: food serving area and till along the top, seating in the middle, Year 5 stalls along the bottom and Christmas trees down the right"
+    >
+      <rect class="cafe-floor" x="20" y="20" width="960" height="660" rx="16"></rect>
+
+      <g class="cafe-wall-label">
+        <rect x="24" y="270" width="64" height="200" rx="6"></rect>
+        <text x="56" y="370" text-anchor="middle" transform="rotate(-90 56 370)">
+          The Christmas Café
+        </text>
+      </g>
+
+      <g class="cafe-counter">
+        <rect x="212" y="44" width="420" height="26" rx="4"></rect>
+        <text x="422" y="62" text-anchor="middle">Food serving</text>
+      </g>
+
+      <g class="cafe-queue">
+        <path d="M196 108 H600" marker-end="url(#cafeArrow)"></path>
+        <text x="196" y="128">Queue this way</text>
+      </g>
+
+      <g class="cafe-till">
+        <rect x="652" y="86" width="52" height="44" rx="4"></rect>
+        <text x="678" y="113" text-anchor="middle">Till</text>
+      </g>
+
+      <text class="cafe-seating-label" x="500" y="345" text-anchor="middle">Seating area</text>
+
+      {tables.map((table) => (
+        <g class="cafe-table">
+          <rect x={table.x} y={table.y} width={table.w} height={table.h} rx="3"></rect>
+          {[0, 1, 2].map((i) => (
+            <>
+              <rect
+                class="cafe-chair"
+                x={table.x + 9 + i * 22}
+                y={table.y - 11}
+                width="13"
+                height="9"
+                rx="2"></rect>
+              <rect
+                class="cafe-chair"
+                x={table.x + 9 + i * 22}
+                y={table.y + table.h + 2}
+                width="13"
+                height="9"
+                rx="2"></rect>
+            </>
+          ))}
+        </g>
+      ))}
+
+      {trees.map((tree) => (
+        <g class="cafe-tree">
+          <rect x={tree.cx - 3} y={tree.cy + 12} width="6" height="9" rx="1"></rect>
+          <polygon points={`${tree.cx},${tree.cy - 22} ${tree.cx - 15},${tree.cy + 4} ${tree.cx + 15},${tree.cy + 4}`}></polygon>
+          <polygon points={`${tree.cx},${tree.cy - 12} ${tree.cx - 18},${tree.cy + 14} ${tree.cx + 18},${tree.cy + 14}`}></polygon>
+        </g>
+      ))}
+
+      <text class="cafe-row-label" x="57" y="592">Year 5 stalls</text>
+      {year5.map((stall) => (
+        <rect class="cafe-stall" x={stall.x} y="600" width={stall.w} height="75" rx="4"></rect>
+      ))}
+
+      <defs>
+        <marker
+          id="cafeArrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="currentColor"></path>
+        </marker>
+      </defs>
+    </svg>
+  </MapFrame>
+  </div>
+
+  <div class="cafe-side">
+    <ul class="cafe-legend">
+      <li><span class="cafe-legend__swatch cafe-legend__swatch--counter"></span>Counter and till</li>
+      <li><span class="cafe-legend__swatch cafe-legend__swatch--table"></span>Table and chairs</li>
+      <li><span class="cafe-legend__swatch cafe-legend__swatch--stall"></span>Year 5 stalls</li>
+      <li><span class="cafe-legend__swatch cafe-legend__swatch--tree"></span>Christmas tree</li>
+    </ul>
+
+    <ul class="cafe-notes">
+      {notes.map((note) => (
+        <li>
+          <p class="cafe-notes__title">{note.title}</p>
+          <p class="cafe-notes__text">{note.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .cafe-plan__frame {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .cafe-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--surface-tint);
+    color: var(--ashford-navy);
+  }
+
+  .cafe-floor {
+    fill: var(--pure-white);
+    stroke: var(--ashford-navy);
+    stroke-width: 4;
+  }
+
+  .cafe-wall-label rect {
+    fill: #e8e6e1;
+    stroke: #c9c5bc;
+  }
+
+  .cafe-wall-label text {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--muted-text);
+    letter-spacing: 0.04em;
+  }
+
+  .cafe-counter rect {
+    fill: var(--christmas-burgundy);
+  }
+
+  .cafe-counter text {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    fill: var(--pure-white);
+  }
+
+  .cafe-queue path {
+    fill: none;
+    stroke: var(--muted-text);
+    stroke-width: 1.6;
+    stroke-dasharray: 5 4;
+  }
+
+  .cafe-queue text {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--muted-text);
+  }
+
+  .cafe-till rect {
+    fill: var(--ashford-navy);
+  }
+
+  .cafe-till text {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--pure-white);
+  }
+
+  .cafe-seating-label {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--muted-text);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .cafe-table rect {
+    fill: #f4e3c6;
+    stroke: var(--soft-gold);
+    stroke-width: 1.2;
+  }
+
+  .cafe-table .cafe-chair {
+    fill: var(--pure-white);
+    stroke: #c9c5bc;
+    stroke-width: 1;
+  }
+
+  .cafe-tree polygon {
+    fill: var(--evergreen);
+  }
+
+  .cafe-tree rect {
+    fill: #6b4a1e;
+  }
+
+  .cafe-row-label {
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    fill: var(--muted-text);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cafe-stall {
+    fill: var(--evergreen);
+  }
+
+  .cafe-side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 1rem 1.75rem;
+    align-items: start;
+    max-width: 900px;
+    margin: 1.25rem auto 0;
+  }
+
+  .cafe-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .cafe-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .cafe-legend__swatch {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+  }
+
+  .cafe-legend__swatch--counter {
+    background: var(--christmas-burgundy);
+  }
+
+  .cafe-legend__swatch--table {
+    background: #f4e3c6;
+    border: 1px solid var(--soft-gold);
+  }
+
+  .cafe-legend__swatch--stall {
+    background: var(--evergreen);
+  }
+
+  .cafe-legend__swatch--tree {
+    background: var(--evergreen);
+    border-radius: 999px;
+  }
+
+  .cafe-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cafe-notes li {
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--border-subtle);
+  }
+
+  .cafe-notes__title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .cafe-notes__text {
+    margin: 0.15rem 0 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 760px) {
+    .cafe-side {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

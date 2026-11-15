@@ -1,157 +1,242 @@
 ---
-import { harperHallStalls } from '../data/mapData';
+import MapFrame from './MapFrame.astro';
+import { harperHallStalls, harperHallFloor } from '../data/mapData';
 
-const stalls = harperHallStalls;
+const floor = harperHallFloor;
+const wall = [
+  `M${floor.x},${floor.y} H${floor.x + floor.w}`,
+  `M${floor.x},${floor.y} V${floor.y + floor.h}`,
+  `M${floor.x + floor.w},${floor.y} V${floor.y + floor.h}`,
+  // Bottom wall, with a gap for each set of double doors.
+  `M${floor.x},${floor.y + floor.h} H${floor.x + 20}`,
+  `M${floor.x + 80},${floor.y + floor.h} H${floor.x + floor.w - 80}`,
+  `M${floor.x + floor.w - 20},${floor.y + floor.h} H${floor.x + floor.w}`,
+].join(' ');
+
+const doors = [
+  { x: floor.x + 20, w: 60 },
+  { x: floor.x + floor.w - 80, w: 60 },
+];
 ---
 
-<div class="hall-map" data-hall-map>
-  <div class="hall-map__canvas">
+<div class="hall-map">
+  <div class="hall-map__frame">
+    <MapFrame label="Harper Hall plan" hint="Tap a stall for details. Swipe to look around the hall.">
     <svg
-      class="hall-map__svg"
-      viewBox="288 -22 624 464"
+      class="hall-svg"
+      viewBox="290 90 620 510"
       role="group"
-      aria-label="Plan of Harper Hall showing stalls 1 to 22 in a ring"
+      aria-label="Plan of Harper Hall showing stalls 1 to 22 in a ring, with a stallholder list alongside"
     >
-      <rect class="hall-floor" x="300" y="20" width="600" height="400" rx="18" />
+      <rect
+        class="hall-floor"
+        x={floor.x}
+        y={floor.y}
+        width={floor.w}
+        height={floor.h}
+        rx="16"></rect>
+      <path class="hall-wall" d={wall}></path>
 
-      <!-- Entrance marker, top of the plan -->
-      <g class="hall-entrance">
-        <path d="M470 20 v-14 M530 20 v-14" />
-        <text x="500" y="0" text-anchor="middle">Entrance</text>
-      </g>
+      {doors.map((door) => (
+        <g class="hall-door">
+          <line
+            x1={door.x}
+            y1={floor.y + floor.h}
+            x2={door.x + door.w}
+            y2={floor.y + floor.h}
+          />
+          <text x={door.x + door.w / 2} y={floor.y + floor.h + 24} text-anchor="middle">
+            Entrance
+          </text>
+        </g>
+      ))}
 
-      {
-        stalls.map((stall) => (
-          <g
-            class:list={['stall-block', `stall-block--${stall.kind}`]}
-            data-stall-no={stall.no}
-            data-stall-name={stall.name}
-            data-stall-note={stall.note ?? ''}
-            tabindex="0"
-            role="button"
-            aria-label={`Stall ${stall.no}, ${stall.name}`}
-          >
-            <rect
-              x={stall.cx - stall.w / 2}
-              y={stall.cy - stall.h / 2}
-              width={stall.w}
-              height={stall.h}
-              rx="6"
-              transform={stall.rot ? `rotate(${stall.rot} ${stall.cx} ${stall.cy})` : undefined}
-            />
-            <text
-              x={stall.cx}
-              y={stall.cy + 6}
-              text-anchor="middle"
-              transform={stall.rot ? `rotate(${stall.rot} ${stall.cx} ${stall.cy})` : undefined}
-            >
-              {stall.no}
-            </text>
-          </g>
-        ))
-      }
+      <text class="hall-marker" x={floor.x + 4} y={floor.y - 14}>Top of the hall</text>
+      <text class="hall-marker" x={floor.x + floor.w - 4} y={floor.y - 14} text-anchor="end">
+        Home Plus 23 and Impact Squad outside
+      </text>
+
+      {harperHallStalls.map((stall) => (
+        <g
+          class:list={['stall-block', `stall-block--${stall.kind}`]}
+          data-stall-no={stall.no}
+          data-stall-name={stall.name}
+          data-stall-note={stall.note}
+          tabindex="0"
+          role="button"
+          aria-label={`Stall ${stall.no}, ${stall.name}`}
+        >
+          <rect
+            x={stall.cx - stall.w / 2}
+            y={stall.cy - stall.h / 2}
+            width={stall.w}
+            height={stall.h}
+            rx="5"
+            transform={stall.rot ? `rotate(${stall.rot} ${stall.cx} ${stall.cy})` : undefined}
+          />
+          <text
+            x={stall.cx}
+            y={stall.cy}
+            transform={stall.rot ? `rotate(${stall.rot} ${stall.cx} ${stall.cy})` : undefined}>
+            {stall.no}
+          </text>
+        </g>
+      ))}
     </svg>
+  </MapFrame>
   </div>
 
-  <div class="hall-map__side">
+  <div class="hall-side">
     <div class="hall-detail" aria-live="polite">
       <p class="hall-detail__label">Selected stall</p>
       <p class="hall-detail__name" data-detail-name>Tap a stall on the plan</p>
       <p class="hall-detail__meta" data-detail-meta>
-        Stalls 1–22 are in the ring inside Harper Hall. Stalls 23–27 are elsewhere on site.
+        Stalls 1–22 are in the ring inside the hall. 23–27 are on the other plans further down this
+        page.
       </p>
     </div>
 
-    <div class="hall-search">
-      <label class="hall-search__label" for="hallStallSearch">Find a stallholder</label>
-      <input
-        class="hall-search__input"
-        id="hallStallSearch"
-        type="search"
-        placeholder="Search by name"
-        autocomplete="off"
-      />
-    </div>
+    <label class="hall-search" for="hallStallSearch">Find a stallholder</label>
+    <input
+      class="hall-search__input"
+      id="hallStallSearch"
+      type="search"
+      placeholder="Search by name"
+      autocomplete="off"
+    />
 
     <ul class="hall-list" data-hall-list>
-      {
-        stalls.map((stall) => (
-          <li>
-            <button
-              type="button"
-              class="hall-list__item"
-              data-list-no={stall.no}
-              data-list-name={stall.name.toLowerCase()}
-            >
-              <span class="hall-list__no">{stall.no}</span>
-              <span class="hall-list__name">{stall.name}</span>
-            </button>
-          </li>
-        ))
-      }
+      {harperHallStalls.map((stall) => (
+        <li>
+          <button type="button" data-list-no={stall.no} data-list-name={stall.name.toLowerCase()}>
+            <span class="hall-list__no">{stall.no}</span>
+            <span class="hall-list__name">{stall.name}</span>
+          </button>
+        </li>
+      ))}
     </ul>
-    <p class="hall-list__empty" data-hall-empty hidden>No stall matches that search.</p>
+    <p class="hall-empty" data-hall-empty hidden>No stall matches that search.</p>
   </div>
 </div>
 
+<script>
+  const root = document.querySelector<HTMLElement>('.hall-map');
+  if (root) {
+    const nameEl = root.querySelector<HTMLElement>('[data-detail-name]')!;
+    const metaEl = root.querySelector<HTMLElement>('[data-detail-meta]')!;
+    const blocks = [...root.querySelectorAll<SVGGElement>('.stall-block')];
+    const items = [...root.querySelectorAll<HTMLButtonElement>('[data-list-no]')];
+    const input = root.querySelector<HTMLInputElement>('#hallStallSearch');
+    const empty = root.querySelector<HTMLElement>('[data-hall-empty]')!;
+    const list = root.querySelector<HTMLElement>('[data-hall-list]')!;
+
+    let active: number | null = null;
+
+    const select = (no: number | null) => {
+      active = no;
+      blocks.forEach((block) => {
+        block.classList.toggle('is-active', Number(block.dataset.stallNo) === no);
+      });
+      if (no === null) {
+        nameEl.textContent = 'Tap a stall on the plan';
+        metaEl.textContent =
+          'Stalls 1–22 are in the ring inside the hall. 23–27 are on the other plans further down this page.';
+        return;
+      }
+      const block = blocks.find((b) => Number(b.dataset.stallNo) === no);
+      if (!block) return;
+      nameEl.textContent = block.dataset.stallName ?? '';
+      metaEl.textContent =
+        block.dataset.stallNote ??
+        `Stall ${no} in Harper Hall. Ask at the Welcome Point in Main Reception for help.`;
+    };
+
+    blocks.forEach((block) => {
+      const no = Number(block.dataset.stallNo);
+      block.addEventListener('click', () => select(no));
+      block.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          select(no);
+        }
+      });
+    });
+
+    items.forEach((item) => {
+      const no = Number(item.dataset.listNo);
+      item.addEventListener('click', () => select(no));
+    });
+
+    input?.addEventListener('input', () => {
+      const query = input.value.trim().toLowerCase();
+      let shown = 0;
+      items.forEach((item) => {
+        const li = item.closest('li')!;
+        const matches = query === '' || (item.dataset.listName ?? '').includes(query);
+        li.hidden = !matches;
+        if (matches) shown += 1;
+      });
+      blocks.forEach((block) => {
+        const matches =
+          query === '' || (block.dataset.stallName ?? '').toLowerCase().includes(query);
+        block.classList.toggle('is-dimmed', !matches);
+      });
+      empty.hidden = shown > 0;
+      list.hidden = shown === 0;
+      if (shown === 0) select(null);
+    });
+  }
+</script>
+
 <style>
-  .hall-map {
-    display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-    gap: 1.75rem;
-    align-items: start;
+  .hall-map__frame {
+    max-width: 820px;
+    margin: 0 auto;
   }
 
-  .hall-map__canvas {
-    background: var(--surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .hall-map__svg {
+  .hall-svg {
     display: block;
     width: 100%;
     height: auto;
-    overflow: visible;
+    background: var(--surface-tint);
   }
 
   .hall-floor {
-    fill: var(--surface-tint);
-    stroke: var(--border-subtle);
-    stroke-width: 1.5;
+    fill: var(--pure-white);
   }
 
-  .hall-entrance path {
-    stroke: var(--text-secondary);
-    stroke-width: 2;
+  .hall-wall {
     fill: none;
+    stroke: var(--ashford-navy);
+    stroke-width: 5;
+    stroke-linecap: round;
   }
 
-  .hall-entrance text {
+  .hall-door line {
+    stroke: var(--pure-white);
+    stroke-width: 7;
+  }
+
+  .hall-door text {
     font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 0.1em;
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--muted-text);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    fill: var(--text-secondary);
   }
 
-  .stall-block {
-    cursor: pointer;
-    outline: none;
+  .hall-marker {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--muted-text);
+    letter-spacing: 0.04em;
   }
 
   .stall-block rect {
-    stroke: transparent;
-    stroke-width: 2.5;
-    transition:
-      fill 0.15s ease,
-      stroke 0.15s ease;
-  }
-
-  .stall-block--independent rect {
     fill: var(--evergreen);
+    stroke: none;
+    transition: fill 120ms ease;
   }
 
   .stall-block--pfa rect {
@@ -160,204 +245,152 @@ const stalls = harperHallStalls;
 
   .stall-block text {
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 700;
     fill: var(--pure-white);
+    text-anchor: middle;
+    dominant-baseline: central;
     pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stall-block {
+    cursor: pointer;
+    outline: none;
+    transition: opacity 120ms ease;
   }
 
   .stall-block:hover rect,
   .stall-block:focus-visible rect {
-    fill: var(--navy);
+    fill: var(--ashford-navy);
   }
 
   .stall-block.is-active rect {
-    fill: var(--navy);
+    fill: var(--ashford-navy);
     stroke: var(--soft-gold);
+    stroke-width: 3;
   }
 
   .stall-block.is-dimmed {
-    opacity: 0.28;
+    opacity: 0.22;
   }
 
-  .hall-map__side {
+  .hall-side {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.65rem;
+    max-width: 820px;
+    margin: 1.25rem auto 0;
   }
 
   .hall-detail {
-    background: var(--navy);
-    color: var(--pure-white);
+    padding: 1rem 1.1rem;
     border-radius: var(--radius-md);
-    padding: 1.1rem 1.25rem;
+    background: var(--ashford-navy);
+    color: var(--pure-white);
   }
 
   .hall-detail__label {
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.3rem;
     font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--soft-gold);
   }
 
   .hall-detail__name {
     margin: 0;
-    color: var(--pure-white);
     font-family: var(--font-serif);
-    font-size: 1.4rem;
-    line-height: 1.2;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    color: var(--pure-white);
   }
 
   .hall-detail__meta {
-    margin: 0.4rem 0 0;
-    color: rgba(255, 255, 255, 0.78);
+    margin: 0.35rem 0 0;
     font-size: 0.85rem;
-    line-height: 1.5;
+    line-height: 1.55;
     color: rgba(255, 255, 255, 0.78);
   }
 
-  .hall-search__label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .hall-search {
+    margin-top: 0.15rem;
+    font-size: 0.78rem;
+    font-weight: 600;
     color: var(--text-secondary);
-    margin-bottom: 0.4rem;
   }
 
   .hall-search__input {
     width: 100%;
-    padding: 0.6rem 0.75rem;
-    font: inherit;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    background: var(--surface);
+    padding: 0.65rem 0.8rem;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
+    background: var(--pure-white);
+    font: inherit;
+    font-size: 0.92rem;
+    color: var(--text-primary);
   }
 
   .hall-search__input:focus-visible {
-    outline: 2px solid var(--navy);
+    outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
 
   .hall-list {
-    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.15rem 0.75rem;
+    max-height: 16rem;
     margin: 0;
-    padding: 0;
-    max-height: 320px;
+    padding: 0.15rem 0.35rem 0.15rem 0;
     overflow-y: auto;
-    border-top: 1px solid var(--border-subtle);
+    list-style: none;
   }
 
-  .hall-list__item {
+  .hall-list button {
     display: flex;
-    align-items: baseline;
-    gap: 0.7rem;
+    align-items: center;
+    gap: 0.6rem;
     width: 100%;
-    padding: 0.5rem 0.25rem;
-    background: none;
+    padding: 0.5rem 0.55rem;
     border: 0;
-    border-bottom: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: none;
     font: inherit;
     font-size: 0.9rem;
-    text-align: left;
     color: var(--text-primary);
+    text-align: left;
     cursor: pointer;
   }
 
-  .hall-list__item:hover,
-  .hall-list__item:focus-visible {
+  .hall-list button:hover,
+  .hall-list button:focus-visible {
     background: var(--surface-tint);
-    outline: none;
-  }
-
-  .hall-list__item.is-active {
-    background: var(--surface-tint);
-    font-weight: 600;
   }
 
   .hall-list__no {
-    flex: 0 0 1.6rem;
-    font-variant-numeric: tabular-nums;
+    flex: none;
+    min-width: 1.55rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 999px;
+    background: var(--evergreen);
+    color: var(--pure-white);
+    font-size: 0.72rem;
     font-weight: 700;
-    color: var(--accent);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
   }
 
-  .hall-list__empty {
+  .hall-empty {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     color: var(--text-secondary);
   }
 
-  @media (max-width: 900px) {
-    .hall-map {
-      grid-template-columns: 1fr;
-    }
-
+  @media (max-width: 640px) {
     .hall-list {
-      max-height: 240px;
+      max-height: 13rem;
     }
   }
 </style>
-
-<script>
-  const root = document.querySelector<HTMLElement>('[data-hall-map]');
-  if (root) {
-    const blocks = Array.from(root.querySelectorAll<SVGGElement>('.stall-block'));
-    const items = Array.from(root.querySelectorAll<HTMLButtonElement>('.hall-list__item'));
-    const nameEl = root.querySelector<HTMLElement>('[data-detail-name]');
-    const metaEl = root.querySelector<HTMLElement>('[data-detail-meta]');
-    const search = root.querySelector<HTMLInputElement>('#hallStallSearch');
-    const empty = root.querySelector<HTMLElement>('[data-hall-empty]');
-
-    const select = (no: string) => {
-      const block = blocks.find((b) => b.dataset.stallNo === no);
-      if (!block || !nameEl || !metaEl) return;
-
-      blocks.forEach((b) => b.classList.toggle('is-active', b === block));
-      items.forEach((i) => i.classList.toggle('is-active', i.dataset.listNo === no));
-
-      nameEl.textContent = block.dataset.stallName ?? '';
-      const note = block.dataset.stallNote;
-      metaEl.textContent = note
-        ? note
-        : `Stall ${no} in Harper Hall. Ask at the Welcome Point in Main Reception if you need help finding it.`;
-    };
-
-    blocks.forEach((block) => {
-      block.addEventListener('click', () => select(block.dataset.stallNo ?? ''));
-      block.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          select(block.dataset.stallNo ?? '');
-        }
-      });
-    });
-
-    items.forEach((item) => {
-      item.addEventListener('click', () => select(item.dataset.listNo ?? ''));
-    });
-
-    search?.addEventListener('input', () => {
-      const query = search.value.trim().toLowerCase();
-      let visible = 0;
-
-      items.forEach((item) => {
-        const match = !query || (item.dataset.listName ?? '').includes(query);
-        item.parentElement?.toggleAttribute('hidden', !match);
-        if (match) visible += 1;
-      });
-
-      blocks.forEach((block) => {
-        const match = !query || (block.dataset.stallName ?? '').toLowerCase().includes(query);
-        block.classList.toggle('is-dimmed', !match);
-      });
-
-      empty?.toggleAttribute('hidden', visible > 0);
-    });
-  }
-</script>
