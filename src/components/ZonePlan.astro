@@ -1,0 +1,508 @@
+---
+import MapFrame from './MapFrame.astro';
+import type { SiteZone, ZoneKind } from '../data/mapData';
+
+interface Props {
+  zones: SiteZone[];
+  viewBox: string;
+  label: string;
+  hint?: string;
+  legend: { kind: ZoneKind; label: string }[];
+  note?: string;
+}
+
+const { zones, viewBox, label, hint, legend, note } = Astro.props;
+
+const SIZES = [18, 16.5, 15, 13.5, 12, 11, 10, 9.5];
+
+/** Greedy word wrap, so labels fit inside their block instead of spilling out. */
+function wrap(text: string, maxChars: number): string[] {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length > maxChars && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 3);
+}
+
+/**
+ * Pick the largest font size whose wrapped label still fits the block.
+ * Narrow, tall blocks get their label turned on its side, like the PFA plan does.
+ */
+function layout(zone: SiteZone) {
+  const text = zone.short ?? zone.label;
+  const vertical = !zone.rot && zone.h > zone.w * 1.5 && zone.w < 80;
+  const ew = vertical ? zone.h : zone.w;
+  const eh = vertical ? zone.w : zone.h;
+
+  if (zone.rot) {
+    const avail = zone.w - 10;
+    let size = 13;
+    while (size > 7.5 && text.length * size * 0.56 > avail) size -= 0.5;
+    return { size, lines: [text], lineH: 0, subSize: 0, subH: 0, total: size, vertical, ew, eh };
+  }
+
+  /** Try a size, optionally with the smaller second line under the label. */
+  function attempt(size: number, withSub: boolean) {
+    const maxChars = Math.max(3, Math.floor((ew - 8) / (size * 0.56)));
+    const lines = wrap(text, maxChars);
+    const lineH = size * 1.15;
+    const subSize = withSub ? size * 0.78 : 0;
+    const subH = withSub && zone.sub ? subSize * 1.2 : 0;
+    const total = lines.length * lineH + subH;
+    const widest = Math.max(...lines.map((line) => line.length)) * size * 0.56;
+    const subWide = withSub && zone.sub ? zone.sub.length * subSize * 0.56 : 0;
+    const ok = total <= eh - 4 && widest <= ew - 6 && subWide <= ew - 6;
+    return { ok, size, lines, lineH, subSize, subH, total };
+  }
+
+  // Largest size that fits the label and its second line, else the label alone.
+  for (const withSub of [true, false]) {
+    for (const size of SIZES) {
+      const fit = attempt(size, withSub);
+      if (fit.ok) {
+        return { ...fit, vertical, ew, eh };
+      }
+    }
+  }
+
+  const fallback = attempt(9.5, false);
+  return { ...fallback, subSize: 0, subH: 0, vertical, ew, eh };
+}
+
+const laid = zones.map((zone) => {
+  const box = layout(zone);
+  const cx = zone.x + zone.w / 2;
+  const cy = zone.y + zone.h / 2;
+  const transform = zone.rot
+    ? `rotate(${zone.rot} ${cx} ${cy})`
+    : box.vertical
+      ? `rotate(-90 ${cx} ${cy})`
+      : undefined;
+  // Stack the label lines and the second line as boxes, then centre the stack.
+  const stack = box.lines.map(() => box.lineH);
+  if (box.subSize > 0) stack.push(box.subH);
+  const stackH = stack.reduce((sum, part) => sum + part, 0);
+  const top = cy - box.eh / 2 + Math.max(0, (box.eh - stackH) / 2);
+  const labelYs: number[] = [];
+  let cursor = top;
+  for (const part of box.lines) {
+    labelYs.push(cursor + box.size * 0.8);
+    cursor += box.lineH;
+  }
+  const subY = box.subSize > 0 ? cursor + box.subSize * 0.85 : 0;
+  return { ...zone, ...box, cx, cy, transform, labelYs, subY };
+});
+---
+
+<div class="zone-plan">
+  <div class="zone-plan__frame">
+    <MapFrame label={label} hint={hint}>
+      <svg class="zone-svg" viewBox={viewBox} role="group" aria-label={label}>
+        {laid.map((zone) => (
+          <g
+            class:list={['zone', `zone--${zone.kind}`]}
+            data-zone-id={zone.id}
+            data-zone-label={zone.label}
+            data-zone-sub={zone.sub}
+            data-zone-detail={zone.detail}
+            tabindex={zone.detail ? '0' : undefined}
+            role={zone.detail ? 'button' : undefined}
+            aria-label={zone.detail ? `${zone.label}. ${zone.detail}` : undefined}
+          >
+            <title>{zone.sub ? `${zone.label} (${zone.sub})` : zone.label}</title>
+            <rect
+              x={zone.x}
+              y={zone.y}
+              width={zone.w}
+              height={zone.h}
+              rx="6"
+              transform={zone.rot ? `rotate(${zone.rot} ${zone.cx} ${zone.cy})` : undefined}
+            />
+            <g transform={zone.transform}>
+              {zone.lines.map((line, index) => (
+                <text
+                  class="zone__label"
+                  x={zone.cx}
+                  y={zone.labelYs[index]}
+                  font-size={zone.size}
+                  text-anchor="middle">
+                  {line}
+                </text>
+              ))}
+              {zone.sub && zone.subSize > 0 && (
+                <text
+                  class="zone__sub"
+                  x={zone.cx}
+                  y={zone.subY}
+                  font-size={zone.subSize}
+                  text-anchor="middle">
+                  {zone.sub}
+                </text>
+              )}
+            </g>
+          </g>
+        ))}
+      </svg>
+    </MapFrame>
+  </div>
+
+  <div class="zone-side">
+    <div class="zone-detail" aria-live="polite">
+      <p class="zone-detail__label">Selected area</p>
+      <p class="zone-detail__name" data-zone-detail-name>Tap a labelled area</p>
+      <p class="zone-detail__meta" data-zone-detail-meta>
+        {note ?? 'Tap any area on the plan to read what is there.'}
+      </p>
+    </div>
+
+    <ul class="zone-legend">
+      {legend.map((entry) => (
+        <li>
+          <span class:list={['zone-legend__swatch', `zone--${entry.kind}`]} aria-hidden="true"></span>
+          {entry.label}
+        </li>
+      ))}
+    </ul>
+
+    <ul class="zone-list">
+      {zones.map((zone) => (
+        <li>
+          <button type="button" data-zone-target={zone.id}>
+            <span class:list={['zone-list__dot', `zone--${zone.kind}`]} aria-hidden="true"></span>
+            <span class="zone-list__text">
+              <span class="zone-list__name">{zone.label}</span>
+              {zone.sub && <span class="zone-list__sub">{zone.sub}</span>}
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.zone-plan').forEach((root) => {
+    const nameEl = root.querySelector<HTMLElement>('[data-zone-detail-name]')!;
+    const metaEl = root.querySelector<HTMLElement>('[data-zone-detail-meta]')!;
+    const defaultMeta = metaEl.textContent ?? '';
+    const groups = [...root.querySelectorAll<SVGGElement>('.zone')];
+
+    const select = (id: string | null) => {
+      groups.forEach((group) => {
+        group.classList.toggle('is-active', group.dataset.zoneId === id);
+      });
+      const group = groups.find((g) => g.dataset.zoneId === id);
+      if (!group) {
+        nameEl.textContent = 'Tap a labelled area';
+        metaEl.textContent = defaultMeta;
+        return;
+      }
+      const sub = group.dataset.zoneSub;
+      nameEl.textContent = sub ? `${group.dataset.zoneLabel} — ${sub}` : (group.dataset.zoneLabel ?? '');
+      metaEl.textContent = group.dataset.zoneDetail ?? defaultMeta;
+    };
+
+    groups.forEach((group) => {
+      if (!group.dataset.zoneDetail) return;
+      const id = group.dataset.zoneId ?? null;
+      group.addEventListener('click', () => select(id));
+      group.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          select(id);
+        }
+      });
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-zone-target]').forEach((button) => {
+      button.addEventListener('click', () => select(button.dataset.zoneTarget ?? null));
+    });
+  });
+</script>
+
+<style>
+  .zone-plan__frame {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .zone-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--surface-tint);
+  }
+
+  .zone rect {
+    stroke-width: 1.5;
+  }
+
+  .zone--building rect {
+    fill: #dfe4ee;
+    stroke: #b6c1d6;
+  }
+
+  .zone--stall rect {
+    fill: var(--evergreen);
+    stroke: #1a4d3a;
+  }
+
+  .zone--facility rect {
+    fill: var(--christmas-burgundy);
+    stroke: #7d1228;
+  }
+
+  .zone--outdoor rect {
+    fill: #f4e3c6;
+    stroke: var(--soft-gold);
+  }
+
+  .zone--entrance rect {
+    fill: var(--ashford-navy);
+    stroke: #0d1a30;
+  }
+
+  .zone--path rect {
+    fill: #e8e6e1;
+    stroke: #c9c5bc;
+    stroke-dasharray: 5 4;
+  }
+
+  .zone__label {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    fill: var(--ashford-navy);
+    pointer-events: none;
+  }
+
+  .zone__sub {
+    font-family: var(--font-sans);
+    fill: var(--muted-text);
+    pointer-events: none;
+  }
+
+  .zone--stall .zone__label,
+  .zone--facility .zone__label,
+  .zone--entrance .zone__label {
+    fill: var(--pure-white);
+  }
+
+  .zone--stall .zone__sub,
+  .zone--facility .zone__sub,
+  .zone--entrance .zone__sub {
+    fill: rgba(255, 255, 255, 0.82);
+  }
+
+  .zone--outdoor .zone__label {
+    fill: #6b4a1e;
+  }
+
+  .zone--outdoor .zone__sub {
+    fill: #7d5a2a;
+  }
+
+  .zone[role='button'] {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .zone[role='button']:hover rect,
+  .zone[role='button']:focus-visible rect {
+    stroke: var(--ashford-navy);
+    stroke-width: 3;
+  }
+
+  .zone.is-active rect {
+    stroke: var(--soft-gold);
+    stroke-width: 3.5;
+  }
+
+  .zone-side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 1rem 1.5rem;
+    align-items: start;
+    max-width: 900px;
+    margin: 1.25rem auto 0;
+  }
+
+  .zone-detail {
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-md);
+    background: var(--ashford-navy);
+    color: var(--pure-white);
+  }
+
+  .zone-detail__label {
+    margin: 0 0 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--soft-gold);
+  }
+
+  .zone-detail__name {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    line-height: 1.25;
+    color: var(--pure-white);
+  }
+
+  .zone-detail__meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .zone-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .zone-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .zone-legend__swatch {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    border: 1px solid transparent;
+  }
+
+  .zone-legend__swatch.zone--building {
+    background: #dfe4ee;
+    border-color: #b6c1d6;
+  }
+
+  .zone-legend__swatch.zone--stall {
+    background: var(--evergreen);
+  }
+
+  .zone-legend__swatch.zone--facility {
+    background: var(--christmas-burgundy);
+  }
+
+  .zone-legend__swatch.zone--outdoor {
+    background: #f4e3c6;
+    border-color: var(--soft-gold);
+  }
+
+  .zone-legend__swatch.zone--entrance {
+    background: var(--ashford-navy);
+  }
+
+  .zone-legend__swatch.zone--path {
+    background: #e8e6e1;
+    border-color: #c9c5bc;
+  }
+
+  .zone-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.1rem 0.75rem;
+    max-height: 15rem;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  .zone-list button {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 2.4rem;
+    padding: 0.4rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    font: inherit;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .zone-list button:hover,
+  .zone-list button:focus-visible {
+    background: var(--surface-tint);
+  }
+
+  .zone-list__dot {
+    flex: none;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-top: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+
+  .zone-list__dot.zone--building {
+    background: #dfe4ee;
+    border-color: #b6c1d6;
+  }
+
+  .zone-list__dot.zone--stall {
+    background: var(--evergreen);
+  }
+
+  .zone-list__dot.zone--facility {
+    background: var(--christmas-burgundy);
+  }
+
+  .zone-list__dot.zone--outdoor {
+    background: #f4e3c6;
+    border-color: var(--soft-gold);
+  }
+
+  .zone-list__dot.zone--entrance {
+    background: var(--ashford-navy);
+  }
+
+  .zone-list__dot.zone--path {
+    background: #e8e6e1;
+    border-color: #c9c5bc;
+  }
+
+  .zone-list__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .zone-list__sub {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 760px) {
+    .zone-side {
+      grid-template-columns: 1fr;
+    }
+
+    .zone-list {
+      max-height: 13rem;
+    }
+  }
+</style>

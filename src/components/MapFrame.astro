@@ -1,0 +1,175 @@
+---
+/**
+ * A scrollable, zoomable frame for the SVG plans.
+ *
+ * On a phone the plan is wider than the screen, so the frame keeps a minimum
+ * width and lets you swipe around it, with Fit / - / + buttons for the rest.
+ * Soft fades at the edges show when there is more plan off-screen.
+ */
+interface Props {
+  label: string;
+  hint?: string;
+}
+
+const { label, hint = 'Swipe or drag to move around the plan.' } = Astro.props;
+---
+
+<div class="map-frame" data-map-frame>
+  <div class="map-frame__bar">
+    <p class="map-frame__hint">{hint}</p>
+    <div class="map-frame__zoom" role="group" aria-label={`Zoom the ${label}`}>
+      <button type="button" class="map-frame__btn" data-zoom="out" aria-label="Zoom out">−</button>
+      <button type="button" class="map-frame__btn" data-zoom="reset" aria-label="Reset zoom">Fit</button>
+      <button type="button" class="map-frame__btn" data-zoom="in" aria-label="Zoom in">+</button>
+    </div>
+  </div>
+  <div class="map-frame__scroller">
+    <div class="map-frame__viewport" data-map-viewport>
+      <div class="map-frame__inner" data-map-inner>
+        <slot />
+      </div>
+    </div>
+    <span class="map-frame__fade map-frame__fade--left" aria-hidden="true"></span>
+    <span class="map-frame__fade map-frame__fade--right" aria-hidden="true"></span>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-map-frame]').forEach((frame) => {
+    const inner = frame.querySelector<HTMLElement>('[data-map-inner]');
+    const viewport = frame.querySelector<HTMLElement>('[data-map-viewport]');
+    if (!inner || !viewport) return;
+
+    let zoom = 1;
+    const apply = () => {
+      inner.style.setProperty('--map-zoom', String(zoom));
+      updateEdges();
+    };
+
+    /** Show a fade on whichever side still has plan hidden behind it. */
+    const updateEdges = () => {
+      const max = viewport.scrollWidth - viewport.clientWidth;
+      frame.classList.toggle('has-left', viewport.scrollLeft > 4);
+      frame.classList.toggle('has-right', max > 4 && viewport.scrollLeft < max - 4);
+    };
+
+    frame.querySelectorAll<HTMLElement>('[data-zoom]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const action = button.dataset.zoom;
+        if (action === 'in') zoom = Math.min(2.4, Math.round((zoom + 0.35) * 100) / 100);
+        else if (action === 'out') zoom = Math.max(1, Math.round((zoom - 0.35) * 100) / 100);
+        else zoom = 1;
+        apply();
+      });
+    });
+
+    viewport.addEventListener('scroll', updateEdges, { passive: true });
+    window.addEventListener('resize', updateEdges);
+    updateEdges();
+  });
+</script>
+
+<style>
+  .map-frame {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--pure-white);
+    overflow: hidden;
+  }
+
+  .map-frame__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface-tint);
+  }
+
+  .map-frame__hint {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+
+  .map-frame__zoom {
+    display: flex;
+    flex: none;
+    gap: 0.3rem;
+  }
+
+  .map-frame__btn {
+    min-width: 2.15rem;
+    height: 2.15rem;
+    padding: 0 0.55rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: var(--pure-white);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .map-frame__btn:hover,
+  .map-frame__btn:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .map-frame__scroller {
+    position: relative;
+  }
+
+  .map-frame__viewport {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .map-frame__inner {
+    --map-zoom: 1;
+    width: calc(var(--map-zoom) * 100%);
+    min-width: calc(var(--map-zoom) * 560px);
+  }
+
+  .map-frame__fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2.4rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .map-frame__fade--left {
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  }
+
+  .map-frame__fade--right {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  }
+
+  .map-frame.has-left .map-frame__fade--left,
+  .map-frame.has-right .map-frame__fade--right {
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .map-frame__hint {
+      font-size: 0.72rem;
+    }
+
+    .map-frame__btn {
+      min-width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+</style>

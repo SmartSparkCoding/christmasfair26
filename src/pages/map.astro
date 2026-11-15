@@ -3,14 +3,45 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import HarperHallMap from '../components/HarperHallMap.astro';
-import SitePlan from '../components/SitePlan.astro';
-import { harperHallStalls, offHallStalls } from '../data/mapData';
+import CafePlan from '../components/CafePlan.astro';
+import ZonePlan from '../components/ZonePlan.astro';
+import {
+  harperHallStalls,
+  offHallStalls,
+  buildingZones,
+  groundZones,
+  type SiteZone,
+  type ZoneKind,
+} from '../data/mapData';
 import { eventInfo } from '../data/fairData';
+
+const LEGEND_LABELS: Record<ZoneKind, string> = {
+  building: 'Room or hall',
+  stall: 'Stall',
+  facility: 'Activity',
+  outdoor: 'Outside',
+  entrance: 'Entrance',
+  path: 'Parking and paths',
+};
+
+const legendFor = (zones: SiteZone[]) =>
+  [...new Set(zones.map((zone) => zone.kind))].map((kind) => ({
+    kind,
+    label: LEGEND_LABELS[kind],
+  }));
+
+const jumps = [
+  { href: '#harper-hall', label: 'Harper Hall' },
+  { href: '#cafe', label: 'Christmas Café' },
+  { href: '#inside', label: 'Inside' },
+  { href: '#outside', label: 'Outside' },
+  { href: '#directory', label: 'Stall numbers' },
+];
 ---
 
 <BaseLayout
   title="Fair Map | Ashford School Christmas Fair 2026"
-  description="Interactive map of the Ashford School Christmas Fair 2026: find every stallholder in Harper Hall, plus the café, Santa's Grotto, raffle, rides and gazebos across the site."
+  description="Four plans of the Ashford School Christmas Fair 2026: the stalls in Harper Hall, the Christmas Café in Friars Hall, the ground floor of the main building, and the grounds outside."
 >
   <Navbar />
 
@@ -20,19 +51,24 @@ import { eventInfo } from '../data/fairData';
         <p class="page-header__label">Fair map</p>
         <h1 class="page-header__title">Find your way around</h1>
         <p class="page-header__intro">
-          Every stallholder has a number. Tap a stall on the plan to see who is there, or search for
-          a name below.
+          Four plans, drawn from the PFA's own layouts: the stalls in Harper Hall, the Christmas Café,
+          the ground floor of the main building, and the grounds outside. Every stallholder has a
+          number.
         </p>
+
+        <nav class="map-jump" aria-label="Jump to a plan">
+          {jumps.map((jump) => <a href={jump.href}>{jump.label}</a>)}
+        </nav>
       </div>
     </header>
 
-    <section class="map-section">
+    <section class="map-section" id="harper-hall">
       <div class="container">
         <div class="map-heading">
           <h2>The Hall of Stalls</h2>
           <p>
-            Harper Hall holds stalls 1 to 22 in a ring around the room. Stalls 23 to 27 are just
-            outside, or in gazebos on the lawn.
+            Harper Hall holds stalls 1 to 22 in a ring around the room, with the entrance at the
+            bottom. Stalls 23 to 27 are just outside, or in gazebos on the lawn.
           </p>
         </div>
 
@@ -57,21 +93,61 @@ import { eventInfo } from '../data/fairData';
       </div>
     </section>
 
-    <section class="map-section map-section--tint">
+    <section class="map-section map-section--tint" id="cafe">
       <div class="container">
         <div class="map-heading">
-          <h2>The whole site</h2>
+          <h2>The Christmas Café</h2>
           <p>
-            Where the halls, café, grotto, rides and gazebos sit relative to the main entrance. This
-            is a schematic, so it shows the layout rather than exact distances.
+            In Friars Hall. Food is served along the top wall, the queue runs one way to the till,
+            and the tables sit in the middle of the room.
           </p>
         </div>
 
-        <SitePlan />
+        <CafePlan />
       </div>
     </section>
 
-    <section class="map-section">
+    <section class="map-section" id="inside">
+      <div class="container">
+        <div class="map-heading">
+          <h2>Inside the main building</h2>
+          <p>
+            The ground floor: reception and the raffle, the tombolas, the Christingle room, Santa's
+            Grotto, face painting and the stairs up to the café.
+          </p>
+        </div>
+
+        <ZonePlan
+          zones={buildingZones}
+          viewBox="0 0 1000 707"
+          label="Plan of the ground floor of the main building"
+          legend={legendFor(buildingZones)}
+          note="Tap any room or area on the plan to read what is there."
+        />
+      </div>
+    </section>
+
+    <section class="map-section map-section--tint" id="outside">
+      <div class="container">
+        <div class="map-heading">
+          <h2>Outside</h2>
+          <p>
+            The grounds: the main entrance, the gazebos on the lawn, the rides, the mulled wine horse
+            box, and where you can and cannot park.
+          </p>
+        </div>
+
+        <ZonePlan
+          zones={groundZones}
+          viewBox="0 0 1000 707"
+          label="Plan of the fair grounds outside the main building"
+          legend={legendFor(groundZones)}
+          note="Tap any area on the plan to read what is there."
+        />
+      </div>
+    </section>
+
+    <section class="map-section" id="directory">
       <div class="container">
         <div class="map-heading">
           <h2>Stallholder directory</h2>
@@ -98,9 +174,10 @@ import { eventInfo } from '../data/fairData';
         </p>
 
         <p class="map-disclaimer">
-          Stall numbers and positions are taken from the PFA's floor plan and site plan. Layouts can
-          change on the day, so follow signage and ask at the Welcome Point in Main Reception if you
-          cannot find someone. The fair runs {eventInfo.time} on {eventInfo.date}.
+          The plans are traced from the PFA's floor plan, site plan and café layout, so they show
+          where things sit relative to each other rather than exact distances. Layouts can change on
+          the day, so follow signage and ask at the Welcome Point in Main Reception if you cannot
+          find someone. The fair runs {eventInfo.time} on {eventInfo.date}.
         </p>
       </div>
     </section>
@@ -110,8 +187,36 @@ import { eventInfo } from '../data/fairData';
 </BaseLayout>
 
 <style>
+  .map-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .map-jump a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+    padding: 0.4rem 0.95rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy);
+    text-decoration: none;
+  }
+
+  .map-jump a:hover,
+  .map-jump a:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .map-section {
     padding: 3rem 0;
+    scroll-margin-top: 5rem;
   }
 
   .map-section--tint {
@@ -231,6 +336,18 @@ import { eventInfo } from '../data/fairData';
     margin: 2rem 0 0;
     max-width: 70ch;
     font-size: 0.85rem;
+    line-height: 1.6;
     color: var(--text-secondary);
+  }
+
+  @media (max-width: 640px) {
+    .map-section {
+      padding: 2.25rem 0;
+    }
+
+    .map-jump a {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.8rem;
+    }
   }
 </style>
