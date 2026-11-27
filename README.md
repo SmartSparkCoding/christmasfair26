@@ -100,6 +100,14 @@ location where the document gives one, and a one-line description built only fro
 Popup text is deliberately short and will need extending once the PFA supplies details for the
 tombolas, sweet stall and kids stall.
 
+**Impact Squad.** Their stall has a "Student community club" badge and a fuller popup, taken from
+`Documents/PFA XMAS 2026/Impact Squad Assets/The Impact Squad (Poster) (3).pdf`: a team of Ashford
+School students who brainstorm fundraising ideas, design and make products, and learn teamwork and
+entrepreneurial skills. All proceeds support the Ashford School Foundation's Bursary Awards. Their
+hashtag, `#MakingAnImpact`, is shown at the end. The wording has only been condensed into bullet
+points, not changed, and the site still does not claim a stall location for them because the poster
+does not give one.
+
 ## Design system
 
 Tokens live in `src/styles/global.css`:

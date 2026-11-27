@@ -150,12 +150,27 @@ export const independentStalls = [
   { name: "Binks" },
 ];
 
+/** A school or PFA stall and the information shown in its in-site popup. */
+export type SchoolPFASstall = {
+  name: string;
+  location?: string;
+  detail?: string;
+  badge?: string;
+  points?: string[];
+  note?: string;
+  hashtag?: string;
+};
+
 /**
  * School & PFA stalls. Each one opens a short in-site popup. `detail` and
  * `location` only contain what the PFA document actually states; anything it
  * does not describe is left out rather than invented.
+ *
+ * The Impact Squad copy comes from their Community Club poster in the PFA
+ * assets folder. The wording has only been condensed into list form, not
+ * changed.
  */
-export const schoolPFASstalls = [
+export const schoolPFASstalls: SchoolPFASstall[] = [
   {
     name: "Raffle",
     location: "Main Reception",
@@ -191,8 +206,17 @@ export const schoolPFASstalls = [
   },
   {
     name: "Impact Squad (Senior School)",
+    badge: "Student community club",
     detail:
-      "A senior school group. The Impact Squad has been making items to sell on the PFA Christmas Fair stall.",
+      "A team of passionate Ashford School students dedicated to making a positive impact on our school and community.",
+    points: [
+      "Brainstorm: we come up with innovative fundraising ideas.",
+      "Create: we design and produce amazing products.",
+      "Learn: we develop essential teamwork and entrepreneurial skills.",
+    ],
+    note:
+      "All proceeds from our sales directly support the Ashford School Foundation's Bursary Awards, providing opportunities for even more talented students from diverse backgrounds to study here.",
+    hashtag: "#MakingAnImpact",
   },
   {
     name: "Horsebox / Mulled wine",

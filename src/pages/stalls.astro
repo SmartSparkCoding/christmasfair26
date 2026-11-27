@@ -122,8 +122,15 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
                     data-stall-name={stall.name}
                     data-stall-location={stall.location ?? ''}
                     data-stall-detail={stall.detail ?? ''}
+                    data-stall-badge={stall.badge ?? ''}
+                    data-stall-points={JSON.stringify(stall.points ?? [])}
+                    data-stall-note={stall.note ?? ''}
+                    data-stall-hashtag={stall.hashtag ?? ''}
                   >
-                    <span class="stall-name">{stall.name}</span>
+                    <span class="stall-name-wrap">
+                      <span class="stall-name">{stall.name}</span>
+                      {stall.badge && <span class="stall-badge">{stall.badge}</span>}
+                    </span>
                     <span class="stall-arrow" aria-hidden="true">
                       <svg viewBox="0 0 24 24" focusable="false">
                         <path d="M12 5v14M5 12h14" />
@@ -156,10 +163,13 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
 
   <dialog class="stall-dialog" id="stallDialog" aria-labelledby="stallDialogTitle">
     <div class="stall-dialog__inner">
-      <p class="stall-dialog__label">School &amp; PFA stall</p>
+      <p class="stall-dialog__label" data-dialog-label>School &amp; PFA stall</p>
       <h2 class="stall-dialog__title" id="stallDialogTitle"></h2>
       <p class="stall-dialog__location" data-dialog-location hidden></p>
       <p class="stall-dialog__detail" data-dialog-detail></p>
+      <ul class="stall-dialog__points" data-dialog-points hidden></ul>
+      <p class="stall-dialog__note" data-dialog-note hidden></p>
+      <p class="stall-dialog__hashtag" data-dialog-hashtag hidden></p>
       <button type="button" class="stall-dialog__close" data-dialog-close>Close</button>
     </div>
   </dialog>
@@ -207,11 +217,21 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
   /* ---------- PFA stall popups ---------- */
   const dialog = document.getElementById('stallDialog') as HTMLDialogElement | null;
   const dialogTitle = document.getElementById('stallDialogTitle');
+  const dialogLabel = dialog?.querySelector<HTMLElement>('[data-dialog-label]');
   const dialogLocation = dialog?.querySelector<HTMLElement>('[data-dialog-location]');
   const dialogDetail = dialog?.querySelector<HTMLElement>('[data-dialog-detail]');
+  const dialogPoints = dialog?.querySelector<HTMLUListElement>('[data-dialog-points]');
+  const dialogNote = dialog?.querySelector<HTMLElement>('[data-dialog-note]');
+  const dialogHashtag = dialog?.querySelector<HTMLElement>('[data-dialog-hashtag]');
   let lastTrigger: HTMLElement | null = null;
 
   const closeDialog = () => dialog?.close();
+
+  const setOptionalText = (element: HTMLElement | null | undefined, value: string) => {
+    if (!element) return;
+    element.textContent = value;
+    element.hidden = !value;
+  };
 
   document.querySelectorAll<HTMLButtonElement>('.stall--button').forEach((button) => {
     button.addEventListener('click', () => {
@@ -219,17 +239,30 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
 
       lastTrigger = button;
       dialogTitle.textContent = button.dataset.stallName ?? 'Stall';
+      setOptionalText(dialogLabel, button.dataset.stallBadge?.trim() || 'School & PFA stall');
+      setOptionalText(dialogLocation, button.dataset.stallLocation?.trim() ?? '');
+      setOptionalText(dialogDetail, button.dataset.stallDetail?.trim() ?? '');
+      setOptionalText(dialogNote, button.dataset.stallNote?.trim() ?? '');
+      setOptionalText(dialogHashtag, button.dataset.stallHashtag?.trim() ?? '');
 
-      const location = button.dataset.stallLocation?.trim();
-      if (location) {
-        dialogLocation.textContent = location;
-        dialogLocation.hidden = false;
-      } else {
-        dialogLocation.textContent = '';
-        dialogLocation.hidden = true;
+      let points: string[] = [];
+      try {
+        const parsed: unknown = JSON.parse(button.dataset.stallPoints || '[]');
+        if (Array.isArray(parsed)) points = parsed.filter((point): point is string => typeof point === 'string');
+      } catch {
+        points = [];
       }
 
-      dialogDetail.textContent = button.dataset.stallDetail ?? '';
+      if (dialogPoints) {
+        dialogPoints.replaceChildren(
+          ...points.map((point) => {
+            const item = document.createElement('li');
+            item.textContent = point;
+            return item;
+          }),
+        );
+        dialogPoints.hidden = points.length === 0;
+      }
 
       if (typeof dialog.showModal === 'function') {
         dialog.showModal();
@@ -367,6 +400,14 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
     transition: color 0.2s ease, background-color 0.2s ease, padding-left 0.25s ease;
   }
 
+  .stall-name-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    min-width: 0;
+  }
+
   .stall-name {
     font-size: 0.97rem;
     line-height: 1.5;
@@ -388,6 +429,21 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.01em;
     vertical-align: 0.08em;
+  }
+
+  .stall-badge {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 0.16rem 0.5rem;
+    border: 1px solid rgba(152, 25, 52, 0.22);
+    border-radius: 999px;
+    background: rgba(152, 25, 52, 0.07);
+    color: var(--accent);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .stall-arrow {
@@ -564,6 +620,51 @@ const linkedCount = independentStalls.filter((stall) => stall.url).length;
   .stall-dialog__detail {
     font-size: 0.97rem;
     line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+
+  .stall-dialog__points {
+    list-style: none;
+    margin: 0 0 1.1rem;
+    padding: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .stall-dialog__points li {
+    position: relative;
+    padding: 0.6rem 0 0.6rem 1.1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .stall-dialog__points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.08rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .stall-dialog__note {
+    padding: 0.9rem 1rem;
+    background: var(--surface-tint);
+    border-left: 3px solid var(--soft-gold);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.1rem;
+  }
+
+  .stall-dialog__hashtag {
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     margin-bottom: 1.25rem;
   }
 
